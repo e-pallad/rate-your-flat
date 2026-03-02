@@ -112,7 +112,7 @@ export async function POST(req: Request) {
 - Use transactions for multi-step operations
 - Handle null values with optional chaining
 - **Prisma version**: The project uses Prisma **5.22.0** locally. Always use `./node_modules/.bin/prisma` (never `npx prisma`, which may pick up a globally-installed incompatible version)
-- `Role` is stored as a plain `String` field with valid values `"LANDLORD"` | `"RENTER"`. Application code must enforce this.
+- `Role` is stored as a plain `String` field with valid values `"LANDLORD"` | `"RENTER"` | `"MODERATOR"` | `"ADMIN"`. Application code must enforce this.
 
 ```typescript
 // Good
@@ -155,17 +155,19 @@ const flat = await prisma.flat.findUnique({
 src/
 ├── app/              # Next.js App Router pages
 │   ├── (auth)/       # Auth routes (login, register)
-│   ├── (dashboard)/  # Protected dashboards (landlord, renter)
+│   ├── (dashboard)/  # Protected dashboards (landlord, renter, admin, moderator)
 │   ├── api/
 │   │   ├── auth/     # NextAuth + register
-│   │   └── flats/    # POST create flat; [slug]/verify, [slug]/reviews
+│   │   ├── flats/    # POST create flat; [slug]/verify, [slug]/reviews
+│   │   ├── admin/    # GET stats, users; PATCH/DELETE users; GET content flats/reviews
+│   │   └── moderator/ # DELETE flats/[slug], reviews/[id]; GET content flats/reviews
 │   └── flat/
 │       ├── new/      # Add Flat form (any logged-in user)
 │       └── [slug]/   # Flat detail, review form, verify form
 ├── components/
 │   ├── layout/       # Header, Footer
 │   └── ui/           # shadcn components
-├── lib/              # auth.ts, prisma.ts, i18n.tsx
+├── lib/              # auth.ts, prisma.ts, i18n.tsx, admin.ts
 ├── messages/         # en.json / de.json (reference only — NOT imported)
 └── types/            # TypeScript types
 ```
@@ -203,6 +205,22 @@ Flats can be in one of three states:
 - Renter-submitted flats are immediately visible on the homepage with an "Unclaimed" badge
 - Landlords verify/claim a flat via `POST /api/flats/[slug]/verify` — if the flat was unclaimed (`landlordId = null`), it is claimed and `landlordId` is set to that landlord's id
 - The landlord claim flow (generating and distributing verification codes) is **deferred** — verification codes are not yet generated at flat creation time
+
+## User Roles
+
+| Role | Dashboard route | Capabilities |
+|------|----------------|--------------|
+| `RENTER` | `/renter` | Submit reviews, submit flats |
+| `LANDLORD` | `/landlord` | Create/claim flats, respond to reviews |
+| `MODERATOR` | `/moderator` | Delete any flat or review |
+| `ADMIN` | `/admin` | All of the above + user management (change roles, delete users) + platform stats |
+
+**Promote the first admin directly in the DB:**
+```sql
+UPDATE "User" SET role = 'ADMIN' WHERE email = 'your@email.com';
+```
+
+`src/lib/admin.ts` exports `requireAdmin()` and `requireModeratorOrAdmin()` helpers for server components and API routes.
 
 ## Security — Known Gaps (Deferred)
 

@@ -8,8 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// NOTE: Role enum values are "LANDLORD" and "RENTER".
-// Stored as a plain String field for simplicity; application code enforces valid values.
+// NOTE: Role valid values: "LANDLORD" | "RENTER" | "MODERATOR" | "ADMIN"
+// Stored as a plain String field; application code enforces valid values.
+// To create the first ADMIN, run directly in the DB:
+//   UPDATE "User" SET role = 'ADMIN' WHERE email = 'your@email.com';
 
 model User {
   id                 String    @id @default(cuid())
