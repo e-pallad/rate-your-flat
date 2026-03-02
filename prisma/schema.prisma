@@ -1,0 +1,86 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// NOTE: Role enum values are "LANDLORD" and "RENTER".
+// Stored as a plain String field for simplicity; application code enforces valid values.
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  name               String
+  role               String    // use Role enum values: "LANDLORD" | "RENTER"
+  emailNotifications Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  flats          Flat[]   @relation("LandlordFlats")
+  submittedFlats Flat[]   @relation("SubmittedFlats")
+  reviews        Review[]
+}
+
+model Flat {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  address          String
+  city             String
+  postalCode       String
+  country          String    @default("Germany")
+  description      String?
+  landlordId       String?   // null = no landlord account linked yet
+  submittedById    String?   // the user (renter or landlord) who created this listing
+  verified         Boolean   @default(false)
+  verificationCode String?
+  verifiedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  landlord    User?    @relation("LandlordFlats", fields: [landlordId], references: [id], onDelete: SetNull)
+  submittedBy User?    @relation("SubmittedFlats", fields: [submittedById], references: [id], onDelete: SetNull)
+  reviews     Review[]
+
+  @@index([city])
+  @@index([landlordId])
+  @@index([submittedById])
+}
+
+model Review {
+  id                  String    @id @default(cuid())
+  flatId              String
+  userId              String
+  ratings             String    // JSON-serialized: { overall, location, price, condition, noise, landlord }
+  comment             String
+  isAnonymous         Boolean   @default(false)
+  landlordResponse    String?
+  landlordResponseAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  flat   Flat       @relation(fields: [flatId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images FlatImage[]
+
+  @@unique([flatId, userId])
+  @@index([flatId])
+  @@index([userId])
+}
+
+model FlatImage {
+  id        String   @id @default(cuid())
+  reviewId  String
+  filename  String
+  path      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+}
