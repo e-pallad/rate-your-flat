@@ -33,13 +33,36 @@ npm run typecheck  # Run TypeScript type checking
 ```
 
 ### Testing
-There is currently no test suite. `npm test` and `npm run typecheck` are defined but no test files exist.
+The project uses **Vitest** for unit tests. Test files live in `tests/`.
+
 ```bash
+npm test            # Run the full test suite (vitest run)
 npm run typecheck   # Run TypeScript type checking (tsc --noEmit)
 npm run lint        # Run ESLint
+npx prettier --check "src/**/*.{ts,tsx}"  # Check formatting
 ```
 
-If adding tests, use Vitest. Place test files in a `tests/` directory.
+**Before every commit, run all four commands above and fix any failures.**
+
+#### Test conventions
+- Use Vitest (`describe`, `it`, `expect`) — no Jest globals
+- Test files: `tests/<name>.test.ts` (or `.tsx` for component tests)
+- Pure utility functions live in `src/lib/` and must be exported so they can be imported in tests without rendering React
+- Do **not** add side-effectful imports (Next.js routing, Prisma, `next-auth`) to test files — test pure logic only; DB/HTTP behaviour belongs in integration tests (none exist yet)
+- Use the optional `suffix` parameter on `generateSlug` to make slug tests deterministic — never mock `Math.random`
+
+#### Existing test files
+
+| File | Tests | Coverage |
+|---|---|---|
+| `tests/slug.test.ts` | 7 | `src/lib/slug.ts` — `generateSlug` |
+| `tests/ratings.test.ts` | 9 | `src/lib/ratings.ts` — `parseRatings`, `averageOverall` |
+| `tests/i18n.test.ts` | 8 | `src/lib/i18n.tsx` — `translations` lookup, fallback chain, en↔de completeness |
+
+#### When to add tests
+- Any new function extracted to `src/lib/` must have a corresponding test file or entries added to an existing one
+- New i18n keys must be covered by the completeness tests automatically (they check all keys exist in both languages)
+- If you add a new pure utility, extract it to `src/lib/` first, then test it
 
 ## Code Style Guidelines
 
@@ -167,7 +190,7 @@ src/
 ├── components/
 │   ├── layout/       # Header, Footer
 │   └── ui/           # shadcn components
-├── lib/              # auth.ts, prisma.ts, i18n.tsx, admin.ts
+├── lib/              # auth.ts, db.ts, i18n.tsx, admin.ts, slug.ts, ratings.ts
 ├── messages/         # en.json / de.json (reference only — NOT imported)
 └── types/            # TypeScript types
 ```
