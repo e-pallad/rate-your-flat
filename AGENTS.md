@@ -230,6 +230,7 @@ The following security improvements are noted but not yet implemented:
 - **Email enumeration**: The register endpoint returns `409 Conflict` with a message that reveals whether an email is already registered. Consider returning a generic message.
 - **CSRF protection**: NextAuth handles its own CSRF tokens, but custom API routes (`/api/flats`, `/api/flats/[slug]/reviews`) do not validate CSRF tokens. Use `SameSite=Strict` cookies or add a custom header check.
 - **Verification code generation**: `POST /api/flats` currently stores `verificationCode: null`. For the claim flow, generate a random code (e.g. `crypto.randomUUID()`) at creation time and display it to the submitter so a landlord can claim the flat later.
+- **JWT role staleness after role change**: When an admin changes a user's role via `PATCH /api/admin/users/[id]`, the user's existing JWT still carries the old role until they log out and back in (up to 30 days). The middleware in `src/middleware.ts` checks user existence but does not re-read the role on each request. Fix options: (a) re-fetch the role from the DB in the `jwt` callback on every token refresh, or (b) switch to `strategy: "database"` sessions so the role is always read live from the DB.
 
 ## Database / Production Notes
 
