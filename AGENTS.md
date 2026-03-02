@@ -44,6 +44,8 @@ npx prettier --check "src/**/*.{ts,tsx}"  # Check formatting
 
 **Before every commit, run all four commands above and fix any failures.**
 
+> **Note on newly created files:** Prettier is not run automatically on commit. Any file you create or significantly edit must be formatted with `npx prettier --write <file>` (or `npx prettier --write "src/**/*.{ts,tsx}"`) before committing, or the CI format check will fail.
+
 #### Test conventions
 - Use Vitest (`describe`, `it`, `expect`) — no Jest globals
 - Test files: `tests/<name>.test.ts` (or `.tsx` for component tests)

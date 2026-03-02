@@ -7,7 +7,11 @@
 export function parseRatings(raw: string): Record<string, number> {
   try {
     const parsed = JSON.parse(raw);
-    if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+    if (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed)
+    ) {
       return parsed as Record<string, number>;
     }
     return {};
