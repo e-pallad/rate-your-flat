@@ -8,7 +8,7 @@ type TranslationContextType = {
   language: string;
 };
 
-const translations: Record<string, Record<string, string>> = {
+export const translations: Record<string, Record<string, string>> = {
   en: {
     // common
     "common.appName": "Rate Your Flat",

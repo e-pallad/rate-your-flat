@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { parseRatings, averageOverall } from "@/lib/ratings";
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -66,17 +67,8 @@ export default async function FlatPage({
     notFound();
   }
 
-  const ratings = flat.reviews.map((r) => {
-    try {
-      return JSON.parse(r.ratings) as Record<string, number>;
-    } catch {
-      return {} as Record<string, number>;
-    }
-  });
-  const avgRating =
-    ratings.length > 0
-      ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) / ratings.length
-      : 0;
+  const ratings = flat.reviews.map((r) => parseRatings(r.ratings));
+  const avgRating = averageOverall(ratings);
 
   const userReview = session
     ? flat.reviews.find((r) => r.userId === session.user.id)
@@ -129,15 +121,7 @@ export default async function FlatPage({
             ) : (
               <div className="space-y-4">
                 {flat.reviews.map((review) => {
-                  let parsedRatings: Record<string, number> = {};
-                  try {
-                    parsedRatings = JSON.parse(review.ratings) as Record<
-                      string,
-                      number
-                    >;
-                  } catch {
-                    // malformed ratings — skip gracefully
-                  }
+                  const parsedRatings = parseRatings(review.ratings);
                   return (
                     <Card key={review.id}>
                       <CardHeader>

@@ -1,19 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-
-function generateSlug(address: string, city: string): string {
-  const base = `${address}-${city}`
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 60);
-  // Append a short random suffix to ensure uniqueness
-  const suffix = Math.random().toString(36).slice(2, 7);
-  return `${base}-${suffix}`;
-}
+import { generateSlug } from "@/lib/slug";
 
 export async function POST(req: Request) {
   try {
