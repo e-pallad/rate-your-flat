@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -20,13 +20,19 @@ export async function DELETE(
 
     const review = await prisma.review.findUnique({ where: { id } });
     if (!review) {
-      return NextResponse.json({ message: "Review not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 },
+      );
     }
 
     await prisma.review.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Moderator delete review error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

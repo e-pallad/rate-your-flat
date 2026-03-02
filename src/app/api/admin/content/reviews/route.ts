@@ -25,6 +25,9 @@ export async function GET() {
     return NextResponse.json({ reviews });
   } catch (error) {
     console.error("Admin content reviews error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

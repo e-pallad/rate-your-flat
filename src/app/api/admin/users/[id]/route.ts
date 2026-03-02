@@ -6,7 +6,7 @@ const VALID_ROLES = ["LANDLORD", "RENTER", "MODERATOR", "ADMIN"];
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -25,7 +25,7 @@ export async function PATCH(
     if (id === session.user.id && role !== "ADMIN") {
       return NextResponse.json(
         { message: "Cannot change your own role" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,13 +38,16 @@ export async function PATCH(
     return NextResponse.json({ user: updated });
   } catch (error) {
     console.error("Admin change role error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -58,7 +61,7 @@ export async function DELETE(
     if (id === session.user.id) {
       return NextResponse.json(
         { message: "Cannot delete your own account" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,6 +69,9 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Admin delete user error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

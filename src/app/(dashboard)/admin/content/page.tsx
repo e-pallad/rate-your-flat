@@ -47,7 +47,8 @@ export default function AdminContentPage() {
         router.push("/");
         return;
       }
-      if (!flatsRes.ok || !reviewsRes.ok) throw new Error("Failed to load content");
+      if (!flatsRes.ok || !reviewsRes.ok)
+        throw new Error("Failed to load content");
       const [flatsData, reviewsData] = await Promise.all([
         flatsRes.json(),
         reviewsRes.json(),
@@ -69,7 +70,9 @@ export default function AdminContentPage() {
   const deleteFlat = async (slug: string, address: string) => {
     if (!confirm(`${t("admin.confirmDeleteFlat")} (${address})`)) return;
     try {
-      const res = await fetch(`/api/moderator/flats/${slug}`, { method: "DELETE" });
+      const res = await fetch(`/api/moderator/flats/${slug}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const data = await res.json();
         alert(data.message || t("common.error"));
@@ -84,7 +87,9 @@ export default function AdminContentPage() {
   const deleteReview = async (id: string) => {
     if (!confirm(t("admin.confirmDeleteReview"))) return;
     try {
-      const res = await fetch(`/api/moderator/reviews/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/moderator/reviews/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const data = await res.json();
         alert(data.message || t("common.error"));
@@ -107,7 +112,10 @@ export default function AdminContentPage() {
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <Link href="/admin" className="text-sm text-muted-foreground hover:underline">
+          <Link
+            href="/admin"
+            className="text-sm text-muted-foreground hover:underline"
+          >
             {t("admin.dashboard")}
           </Link>
           <h1 className="text-3xl font-bold mt-1">{t("admin.content")}</h1>
@@ -121,16 +129,22 @@ export default function AdminContentPage() {
       ) : (
         <>
           <div className="flex border-b mb-6">
-            <button className={tabClass(tab === "flats")} onClick={() => setTab("flats")}>
+            <button
+              className={tabClass(tab === "flats")}
+              onClick={() => setTab("flats")}
+            >
               {t("admin.flats")} ({flats.length})
             </button>
-            <button className={tabClass(tab === "reviews")} onClick={() => setTab("reviews")}>
+            <button
+              className={tabClass(tab === "reviews")}
+              onClick={() => setTab("reviews")}
+            >
               {t("admin.reviews")} ({reviews.length})
             </button>
           </div>
 
-          {tab === "flats" && (
-            flats.length === 0 ? (
+          {tab === "flats" &&
+            (flats.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
                   {t("common.noResults")}
@@ -143,13 +157,19 @@ export default function AdminContentPage() {
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <div>
-                          <CardTitle className="text-base">{flat.address}</CardTitle>
+                          <CardTitle className="text-base">
+                            {flat.address}
+                          </CardTitle>
                           <p className="text-sm text-muted-foreground">
                             {flat.postalCode} {flat.city}
                           </p>
                         </div>
-                        <Badge variant={flat.verified ? "default" : "secondary"}>
-                          {flat.verified ? t("flat.verified") : t("flat.unverified")}
+                        <Badge
+                          variant={flat.verified ? "default" : "secondary"}
+                        >
+                          {flat.verified
+                            ? t("flat.verified")
+                            : t("flat.unverified")}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -177,11 +197,10 @@ export default function AdminContentPage() {
                   </Card>
                 ))}
               </div>
-            )
-          )}
+            ))}
 
-          {tab === "reviews" && (
-            reviews.length === 0 ? (
+          {tab === "reviews" &&
+            (reviews.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center text-muted-foreground">
                   {t("common.noResults")}
@@ -198,15 +217,22 @@ export default function AdminContentPage() {
                             {review.flat.address}, {review.flat.city}
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {review.isAnonymous ? "Anonymous" : review.user.name}
+                            {review.isAnonymous
+                              ? "Anonymous"
+                              : review.user.name}
                             {/* Admins may see real identity of anonymous reviewers per the platform privacy policy */}
                             {review.user.email && (
-                              <>{" \u00b7 "}{review.user.email}</>
+                              <>
+                                {" \u00b7 "}
+                                {review.user.email}
+                              </>
                             )}
                           </p>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(review.createdAt).toLocaleDateString("de-DE")}
+                          {new Date(review.createdAt).toLocaleDateString(
+                            "de-DE",
+                          )}
                         </p>
                       </div>
                     </CardHeader>
@@ -215,7 +241,10 @@ export default function AdminContentPage() {
                         {review.comment}
                       </p>
                       <div className="flex gap-2 shrink-0">
-                        <Link href={`/flat/${review.flat.slug}`} target="_blank">
+                        <Link
+                          href={`/flat/${review.flat.slug}`}
+                          target="_blank"
+                        >
                           <Button variant="ghost" size="sm">
                             {t("flat.viewFlat")}
                           </Button>
@@ -232,8 +261,7 @@ export default function AdminContentPage() {
                   </Card>
                 ))}
               </div>
-            )
-          )}
+            ))}
         </>
       )}
     </div>

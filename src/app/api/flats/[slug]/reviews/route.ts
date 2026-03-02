@@ -19,7 +19,7 @@ function clampRating(value: unknown): number {
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const session = await auth();
@@ -31,25 +31,38 @@ export async function POST(
     if (session.user.role !== "RENTER") {
       return NextResponse.json(
         { message: "Only renters can submit reviews" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const { slug } = await params;
     const body = await req.json();
-    const { overall, location, price, condition, noise, landlord, comment, isAnonymous } = body;
+    const {
+      overall,
+      location,
+      price,
+      condition,
+      noise,
+      landlord,
+      comment,
+      isAnonymous,
+    } = body;
 
-    if (!comment || typeof comment !== "string" || comment.trim().length === 0) {
+    if (
+      !comment ||
+      typeof comment !== "string" ||
+      comment.trim().length === 0
+    ) {
       return NextResponse.json(
         { message: "Comment is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (comment.trim().length > 2000) {
       return NextResponse.json(
         { message: "Comment must be at most 2000 characters" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +80,7 @@ export async function POST(
     if (existing) {
       return NextResponse.json(
         { message: "You have already reviewed this flat" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,6 +106,9 @@ export async function POST(
     return NextResponse.json({ id: review.id }, { status: 201 });
   } catch (error) {
     console.error("Submit review error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

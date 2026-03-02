@@ -103,7 +103,11 @@ export default function ReviewPage({
       const res = await fetch(`/api/flats/${slug}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...ratings, comment: comment.trim(), isAnonymous }),
+        body: JSON.stringify({
+          ...ratings,
+          comment: comment.trim(),
+          isAnonymous,
+        }),
       });
 
       if (!res.ok) {

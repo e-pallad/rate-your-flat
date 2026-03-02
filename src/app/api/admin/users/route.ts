@@ -29,6 +29,9 @@ export async function GET() {
     return NextResponse.json({ users });
   } catch (error) {
     console.error("Admin users error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

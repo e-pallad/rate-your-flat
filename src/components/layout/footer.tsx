@@ -11,7 +11,9 @@ export function Footer() {
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <h3 className="text-lg font-semibold mb-4">{t("common.appName")}</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              {t("common.appName")}
+            </h3>
             <p className="text-sm text-muted-foreground">
               {t("footer.tagline")}
             </p>
@@ -74,7 +76,8 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} {t("common.appName")}. {t("footer.allRightsReserved")}
+          &copy; {new Date().getFullYear()} {t("common.appName")}.{" "}
+          {t("footer.allRightsReserved")}
         </div>
       </div>
     </footer>

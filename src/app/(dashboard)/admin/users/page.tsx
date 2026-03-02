@@ -25,7 +25,10 @@ type AdminUser = {
 
 const ROLES = ["LANDLORD", "RENTER", "MODERATOR", "ADMIN"];
 
-const roleVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const roleVariant: Record<
+  string,
+  "default" | "secondary" | "destructive" | "outline"
+> = {
   ADMIN: "destructive",
   MODERATOR: "default",
   LANDLORD: "secondary",
@@ -74,7 +77,7 @@ export default function AdminUsersPage() {
         return;
       }
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, role } : u))
+        prev.map((u) => (u.id === userId ? { ...u, role } : u)),
       );
     } catch {
       alert(t("common.error"));
@@ -84,7 +87,9 @@ export default function AdminUsersPage() {
   const deleteUser = async (userId: string, userName: string) => {
     if (!confirm(`${t("admin.confirmDeleteUser")} (${userName})`)) return;
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const data = await res.json();
         alert(data.message || t("common.error"));
@@ -100,7 +105,10 @@ export default function AdminUsersPage() {
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <Link href="/admin" className="text-sm text-muted-foreground hover:underline">
+          <Link
+            href="/admin"
+            className="text-sm text-muted-foreground hover:underline"
+          >
             {t("admin.dashboard")}
           </Link>
           <h1 className="text-3xl font-bold mt-1">{t("admin.users")}</h1>
@@ -125,14 +133,19 @@ export default function AdminUsersPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-base">{user.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
-                  <Badge variant={roleVariant[user.role] ?? "outline"}>{user.role}</Badge>
+                  <Badge variant={roleVariant[user.role] ?? "outline"}>
+                    {user.role}
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="flex justify-between items-center">
                 <p className="text-xs text-muted-foreground">
-                  {t("admin.userJoined")}: {new Date(user.createdAt).toLocaleDateString("de-DE")}
+                  {t("admin.userJoined")}:{" "}
+                  {new Date(user.createdAt).toLocaleDateString("de-DE")}
                   {" \u00b7 "}
                   {t("admin.userFlats")}: {user._count.submittedFlats}
                   {" \u00b7 "}

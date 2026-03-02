@@ -11,10 +11,7 @@ function AccordionItem({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Item>) {
   return (
-    <AccordionPrimitive.Item
-      className={cn("border-b", className)}
-      {...props}
-    />
+    <AccordionPrimitive.Item className={cn("border-b", className)} {...props} />
   );
 }
 
