@@ -18,7 +18,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Menu, User, LogOut, LayoutDashboard, Home } from "lucide-react";
 
 export function Header() {
@@ -35,7 +40,10 @@ export function Header() {
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
                   <Link href="/">{t("nav.flats")}</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -55,12 +63,17 @@ export function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href={
-                      session.user.role === "ADMIN" ? "/admin"
-                      : session.user.role === "MODERATOR" ? "/moderator"
-                      : session.user.role === "LANDLORD" ? "/landlord"
-                      : "/renter"
-                    }>
+                    <Link
+                      href={
+                        session.user.role === "ADMIN"
+                          ? "/admin"
+                          : session.user.role === "MODERATOR"
+                            ? "/moderator"
+                            : session.user.role === "LANDLORD"
+                              ? "/landlord"
+                              : "/renter"
+                      }
+                    >
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       {t("nav.dashboard")}
                     </Link>
@@ -103,10 +116,13 @@ export function Header() {
                 {session ? (
                   <Link
                     href={
-                      session.user.role === "ADMIN" ? "/admin"
-                      : session.user.role === "MODERATOR" ? "/moderator"
-                      : session.user.role === "LANDLORD" ? "/landlord"
-                      : "/renter"
+                      session.user.role === "ADMIN"
+                        ? "/admin"
+                        : session.user.role === "MODERATOR"
+                          ? "/moderator"
+                          : session.user.role === "LANDLORD"
+                            ? "/landlord"
+                            : "/renter"
                     }
                     className="flex items-center gap-2"
                   >

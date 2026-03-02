@@ -109,9 +109,7 @@ export default async function FlatPage({
               </div>
             </CardHeader>
             <CardContent>
-              {flat.description && (
-                <p className="mb-4">{flat.description}</p>
-              )}
+              {flat.description && <p className="mb-4">{flat.description}</p>}
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 {flat.landlord && (
                   <span>
@@ -133,7 +131,10 @@ export default async function FlatPage({
                 {flat.reviews.map((review) => {
                   let parsedRatings: Record<string, number> = {};
                   try {
-                    parsedRatings = JSON.parse(review.ratings) as Record<string, number>;
+                    parsedRatings = JSON.parse(review.ratings) as Record<
+                      string,
+                      number
+                    >;
                   } catch {
                     // malformed ratings — skip gracefully
                   }

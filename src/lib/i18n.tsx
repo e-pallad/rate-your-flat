@@ -113,17 +113,24 @@ const translations: Record<string, Record<string, string>> = {
     "faq.subtitle": "Answers to common questions about Rate Your Flat",
     "faq.viewAll": "View all questions",
     "faq.search.q": "How do I find a flat?",
-    "faq.search.a": "Use the search bar on the homepage to search by address, city, or postal code. Results update as you type. All flats are shown - verified, unverified, and unclaimed.",
+    "faq.search.a":
+      "Use the search bar on the homepage to search by address, city, or postal code. Results update as you type. All flats are shown - verified, unverified, and unclaimed.",
     "faq.review.q": "How do I submit a review?",
-    "faq.review.a": "Open any flat's detail page and click \"Write a Review\". You need a free account to submit. You can rate 6 dimensions (overall, location, price, condition, noise, landlord) on a scale of 1-5, leave a written comment, and optionally post anonymously.",
+    "faq.review.a":
+      'Open any flat\'s detail page and click "Write a Review". You need a free account to submit. You can rate 6 dimensions (overall, location, price, condition, noise, landlord) on a scale of 1-5, leave a written comment, and optionally post anonymously.',
     "faq.addFlat.q": "Can I add a flat as a renter?",
-    "faq.addFlat.a": "Yes - any logged-in user (landlord or renter) can add a flat via the \"Add Flat\" button. Flats added by renters appear immediately on the homepage as \"Unclaimed\" until a landlord registers and verifies them.",
+    "faq.addFlat.a":
+      'Yes - any logged-in user (landlord or renter) can add a flat via the "Add Flat" button. Flats added by renters appear immediately on the homepage as "Unclaimed" until a landlord registers and verifies them.',
     "faq.claim.q": "How do landlords claim or verify a flat?",
-    "faq.claim.a": "Landlords can visit a flat's detail page and click \"Verify\". A verification code (provided by the renter who submitted the flat) is required to complete the claim. Once claimed, the flat displays a Verified badge and the landlord can respond to reviews.",
-    "faq.privacy.q": "Is my data private? Are anonymous reviews truly anonymous?",
-    "faq.privacy.a": "You must have an account to submit a review, but checking \"Post anonymously\" hides your name from all public views - other users and landlords cannot see who wrote the review. Only platform administrators have access to the account behind an anonymous review, and only when investigating reported abuse.",
+    "faq.claim.a":
+      'Landlords can visit a flat\'s detail page and click "Verify". A verification code (provided by the renter who submitted the flat) is required to complete the claim. Once claimed, the flat displays a Verified badge and the landlord can respond to reviews.',
+    "faq.privacy.q":
+      "Is my data private? Are anonymous reviews truly anonymous?",
+    "faq.privacy.a":
+      'You must have an account to submit a review, but checking "Post anonymously" hides your name from all public views - other users and landlords cannot see who wrote the review. Only platform administrators have access to the account behind an anonymous review, and only when investigating reported abuse.',
     "faq.trust.q": "How do you prevent fake or biased reviews?",
-    "faq.trust.a": "We use several layers of protection to keep reviews trustworthy.",
+    "faq.trust.a":
+      "We use several layers of protection to keep reviews trustworthy.",
     // admin
     "admin.dashboard": "Admin Dashboard",
     "admin.overview": "Overview",
@@ -156,7 +163,8 @@ const translations: Record<string, Record<string, string>> = {
     "moderator.deleteFlat": "Delete Flat",
     "moderator.deleteReview": "Delete Review",
     "moderator.confirmDeleteFlat": "Are you sure you want to delete this flat?",
-    "moderator.confirmDeleteReview": "Are you sure you want to delete this review?",
+    "moderator.confirmDeleteReview":
+      "Are you sure you want to delete this review?",
   },
   de: {
     // common
@@ -248,7 +256,8 @@ const translations: Record<string, Record<string, string>> = {
     "dashboard.myReviews": "Meine Bewertungen",
     "dashboard.mySubmittedFlats": "Von mir hinzugefügte Wohnungen",
     // footer
-    "footer.tagline": "Finde deine perfekte Wohnung mit echten Bewertungen von Mietern.",
+    "footer.tagline":
+      "Finde deine perfekte Wohnung mit echten Bewertungen von Mietern.",
     "footer.about": "Über uns",
     "footer.aboutUs": "Über uns",
     "footer.contact": "Kontakt",
@@ -262,17 +271,25 @@ const translations: Record<string, Record<string, string>> = {
     "faq.subtitle": "Antworten auf häufige Fragen zu Bewerte deine Wohnung",
     "faq.viewAll": "Alle Fragen ansehen",
     "faq.search.q": "Wie finde ich eine Wohnung?",
-    "faq.search.a": "Nutze die Suchleiste auf der Startseite, um nach Adresse, Stadt oder Postleitzahl zu suchen. Die Ergebnisse aktualisieren sich waehrend der Eingabe. Es werden alle Wohnungen angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
+    "faq.search.a":
+      "Nutze die Suchleiste auf der Startseite, um nach Adresse, Stadt oder Postleitzahl zu suchen. Die Ergebnisse aktualisieren sich waehrend der Eingabe. Es werden alle Wohnungen angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
     "faq.review.q": "Wie schreibe ich eine Bewertung?",
-    "faq.review.a": "Oeffne die Detailseite einer Wohnung und klicke auf \"Bewertung schreiben\". Du benoeligst ein kostenloses Konto. Du kannst 6 Kategorien (Gesamt, Lage, Preis, Zustand, Laerm, Vermieter) auf einer Skala von 1-5 bewerten, einen Kommentar hinterlassen und optional anonym posten.",
+    "faq.review.a":
+      'Oeffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Du benoeligst ein kostenloses Konto. Du kannst 6 Kategorien (Gesamt, Lage, Preis, Zustand, Laerm, Vermieter) auf einer Skala von 1-5 bewerten, einen Kommentar hinterlassen und optional anonym posten.',
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzufuegen?",
-    "faq.addFlat.a": "Ja - jeder angemeldete Nutzer (Vermieter oder Mieter) kann ueber den Button \"Wohnung hinzufuegen\" eine Wohnung eintragen. Von Mietern eingetragene Wohnungen erscheinen sofort auf der Startseite als \"Nicht beansprucht\", bis ein Vermieter sie verifiziert.",
+    "faq.addFlat.a":
+      'Ja - jeder angemeldete Nutzer (Vermieter oder Mieter) kann ueber den Button "Wohnung hinzufuegen" eine Wohnung eintragen. Von Mietern eingetragene Wohnungen erscheinen sofort auf der Startseite als "Nicht beansprucht", bis ein Vermieter sie verifiziert.',
     "faq.claim.q": "Wie beanspruchen oder verifizieren Vermieter eine Wohnung?",
-    "faq.claim.a": "Vermieter koennen die Detailseite einer Wohnung aufrufen und auf \"Verifizieren\" klicken. Ein Verifizierungscode (vom Mieter bereitgestellt, der die Wohnung eingetragen hat) ist erforderlich. Nach der Beanspruchung zeigt die Wohnung ein Verifiziert-Badge und der Vermieter kann auf Bewertungen antworten.",
-    "faq.privacy.q": "Sind meine Daten sicher? Sind anonyme Bewertungen wirklich anonym?",
-    "faq.privacy.a": "Du benoeligst ein Konto, um eine Bewertung abzugeben, aber wenn du \"Anonym veroeffentlichen\" aktivierst, wird dein Name in allen oeffentlichen Ansichten ausgeblendet - andere Nutzer und Vermieter koennen nicht sehen, wer die Bewertung geschrieben hat. Nur Plattformadministratoren haben Zugang zum Konto hinter einer anonymen Bewertung, und nur bei der Untersuchung gemeldeter Missbrauchsfaelle.",
-    "faq.trust.q": "Wie werden gefaelschte oder voreingenommene Bewertungen verhindert?",
-    "faq.trust.a": "Wir nutzen mehrere Schutzebenen, um die Vertrauenswuerdigkeit der Bewertungen sicherzustellen.",
+    "faq.claim.a":
+      'Vermieter koennen die Detailseite einer Wohnung aufrufen und auf "Verifizieren" klicken. Ein Verifizierungscode (vom Mieter bereitgestellt, der die Wohnung eingetragen hat) ist erforderlich. Nach der Beanspruchung zeigt die Wohnung ein Verifiziert-Badge und der Vermieter kann auf Bewertungen antworten.',
+    "faq.privacy.q":
+      "Sind meine Daten sicher? Sind anonyme Bewertungen wirklich anonym?",
+    "faq.privacy.a":
+      'Du benoeligst ein Konto, um eine Bewertung abzugeben, aber wenn du "Anonym veroeffentlichen" aktivierst, wird dein Name in allen oeffentlichen Ansichten ausgeblendet - andere Nutzer und Vermieter koennen nicht sehen, wer die Bewertung geschrieben hat. Nur Plattformadministratoren haben Zugang zum Konto hinter einer anonymen Bewertung, und nur bei der Untersuchung gemeldeter Missbrauchsfaelle.',
+    "faq.trust.q":
+      "Wie werden gefaelschte oder voreingenommene Bewertungen verhindert?",
+    "faq.trust.a":
+      "Wir nutzen mehrere Schutzebenen, um die Vertrauenswuerdigkeit der Bewertungen sicherzustellen.",
     // admin
     "admin.dashboard": "Admin-Übersicht",
     "admin.overview": "Übersicht",
@@ -311,7 +328,11 @@ const translations: Record<string, Record<string, string>> = {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
-export function TranslationProvider({ children }: { children: React.ReactNode }) {
+export function TranslationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [language, setLanguage] = useState(() => {
     if (typeof window === "undefined") return "de";
     return localStorage.getItem("language") ?? "de";
@@ -335,6 +356,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
 
 export function useTranslation() {
   const context = useContext(TranslationContext);
-  if (!context) throw new Error("useTranslation must be used within TranslationProvider");
+  if (!context)
+    throw new Error("useTranslation must be used within TranslationProvider");
   return context;
 }

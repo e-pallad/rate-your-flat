@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
     const session = await auth();
@@ -16,7 +16,7 @@ export async function POST(
     if (session.user.role !== "LANDLORD") {
       return NextResponse.json(
         { message: "Only landlords can verify flats" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -26,7 +26,7 @@ export async function POST(
     if (!code || typeof code !== "string") {
       return NextResponse.json(
         { message: "Verification code is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,14 +45,14 @@ export async function POST(
     if (flat.verified) {
       return NextResponse.json(
         { message: "Flat is already verified" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!flat.verificationCode || flat.verificationCode !== code.trim()) {
       return NextResponse.json(
         { message: "Invalid verification code" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -68,6 +68,9 @@ export async function POST(
     return NextResponse.json({ message: "Flat verified successfully" });
   } catch (error) {
     console.error("Verify flat error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -60,14 +60,19 @@ export default async function LandlordDashboard() {
     orderBy: { createdAt: "desc" },
   });
 
-  const totalReviews = flats.reduce((acc, flat) => acc + flat.reviews.length, 0);
+  const totalReviews = flats.reduce(
+    (acc, flat) => acc + flat.reviews.length,
+    0,
+  );
   const unverifiedFlats = flats.filter((flat) => !flat.verified);
   const t = getTranslation;
 
   return (
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">{t("dashboard.landlordDashboard")}</h1>
+        <h1 className="text-3xl font-bold">
+          {t("dashboard.landlordDashboard")}
+        </h1>
         <Link href="/flat/new">
           <Button>{t("flat.addFlat")}</Button>
         </Link>

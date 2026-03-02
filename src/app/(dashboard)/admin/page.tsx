@@ -34,12 +34,13 @@ function t(key: string): string {
 export default async function AdminDashboard() {
   await requireAdmin();
 
-  const [totalUsers, totalFlats, totalReviews, totalModerators] = await Promise.all([
-    prisma.user.count(),
-    prisma.flat.count(),
-    prisma.review.count(),
-    prisma.user.count({ where: { role: "MODERATOR" } }),
-  ]);
+  const [totalUsers, totalFlats, totalReviews, totalModerators] =
+    await Promise.all([
+      prisma.user.count(),
+      prisma.flat.count(),
+      prisma.review.count(),
+      prisma.user.count({ where: { role: "MODERATOR" } }),
+    ]);
 
   const stats = [
     { label: t("admin.totalUsers"), value: totalUsers },
@@ -66,7 +67,9 @@ export default async function AdminDashboard() {
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {stat.label}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>

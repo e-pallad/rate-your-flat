@@ -18,11 +18,14 @@ const translations: Record<string, Record<string, string>> = {
     "faq.title": "FAQ",
     "faq.viewAll": "View all questions",
     "faq.search.q": "How do I find a flat?",
-    "faq.search.a": "Use the search bar above to search by address, city, or postal code. All flats are shown - verified, unverified, and unclaimed.",
+    "faq.search.a":
+      "Use the search bar above to search by address, city, or postal code. All flats are shown - verified, unverified, and unclaimed.",
     "faq.review.q": "How do I submit a review?",
-    "faq.review.a": "Open any flat's detail page and click \"Write a Review\". You need a free account to submit.",
+    "faq.review.a":
+      'Open any flat\'s detail page and click "Write a Review". You need a free account to submit.',
     "faq.addFlat.q": "Can I add a flat as a renter?",
-    "faq.addFlat.a": "Yes - any logged-in user can add a flat. Renter-submitted flats appear immediately as \"Unclaimed\".",
+    "faq.addFlat.a":
+      'Yes - any logged-in user can add a flat. Renter-submitted flats appear immediately as "Unclaimed".',
   },
   de: {
     "nav.flats": "Wohnungen",
@@ -35,11 +38,14 @@ const translations: Record<string, Record<string, string>> = {
     "faq.title": "H\u00e4ufige Fragen",
     "faq.viewAll": "Alle Fragen ansehen",
     "faq.search.q": "Wie finde ich eine Wohnung?",
-    "faq.search.a": "Nutze die Suchleiste oben, um nach Adresse, Stadt oder Postleitzahl zu suchen. Alle Wohnungen werden angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
+    "faq.search.a":
+      "Nutze die Suchleiste oben, um nach Adresse, Stadt oder Postleitzahl zu suchen. Alle Wohnungen werden angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
     "faq.review.q": "Wie schreibe ich eine Bewertung?",
-    "faq.review.a": "Oeffne die Detailseite einer Wohnung und klicke auf \"Bewertung schreiben\". Du benoeligst ein kostenloses Konto.",
+    "faq.review.a":
+      'Oeffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Du benoeligst ein kostenloses Konto.',
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzuf\u00fcgen?",
-    "faq.addFlat.a": "Ja - jeder angemeldete Nutzer kann eine Wohnung hinzuf\u00fcgen. Von Mietern eingetragene Wohnungen erscheinen sofort als \"Nicht beansprucht\".",
+    "faq.addFlat.a":
+      'Ja - jeder angemeldete Nutzer kann eine Wohnung hinzuf\u00fcgen. Von Mietern eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
   },
 };
 
@@ -83,7 +89,11 @@ export default async function HomePage({
       ratings.length > 0
         ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) / ratings.length
         : 0;
-    return { ...flat, avgRating: avgRating.toFixed(1), reviewCount: flat.reviews.length };
+    return {
+      ...flat,
+      avgRating: avgRating.toFixed(1),
+      reviewCount: flat.reviews.length,
+    };
   });
 
   const t = getTranslation;
@@ -127,7 +137,10 @@ export default async function HomePage({
                         {t("flat.unverified")}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="shrink-0 text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className="shrink-0 text-muted-foreground"
+                      >
                         {t("flat.unclaimed")}
                       </Badge>
                     )}
@@ -139,8 +152,13 @@ export default async function HomePage({
                 <CardContent>
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-2xl font-bold">{flat.avgRating}</span>
-                      <span className="text-sm text-muted-foreground"> / 5</span>
+                      <span className="text-2xl font-bold">
+                        {flat.avgRating}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {" "}
+                        / 5
+                      </span>
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {flat.reviewCount} {t("flat.reviews")}

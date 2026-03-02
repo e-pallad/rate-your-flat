@@ -73,7 +73,9 @@ export default async function RenterDashboard() {
       </div>
 
       {/* Submitted flats section */}
-      <h2 className="text-xl font-semibold mb-4">{t("dashboard.mySubmittedFlats")}</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {t("dashboard.mySubmittedFlats")}
+      </h2>
       {submittedFlats.length === 0 ? (
         <Card className="mb-8">
           <CardContent className="py-8 text-center text-muted-foreground">
@@ -131,7 +133,10 @@ export default async function RenterDashboard() {
           {reviews.map((review) => {
             let parsedRatings: Record<string, number> = {};
             try {
-              parsedRatings = JSON.parse(review.ratings) as Record<string, number>;
+              parsedRatings = JSON.parse(review.ratings) as Record<
+                string,
+                number
+              >;
             } catch {
               // malformed ratings — skip gracefully
             }
@@ -140,7 +145,9 @@ export default async function RenterDashboard() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">{review.flat.address}</CardTitle>
+                      <CardTitle className="text-lg">
+                        {review.flat.address}
+                      </CardTitle>
                       <p className="text-sm text-muted-foreground">
                         {review.flat.postalCode} {review.flat.city}
                       </p>

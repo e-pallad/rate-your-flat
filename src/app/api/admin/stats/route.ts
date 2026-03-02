@@ -9,16 +9,25 @@ export async function GET() {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    const [totalUsers, totalFlats, totalReviews, totalModerators] = await Promise.all([
-      prisma.user.count(),
-      prisma.flat.count(),
-      prisma.review.count(),
-      prisma.user.count({ where: { role: "MODERATOR" } }),
-    ]);
+    const [totalUsers, totalFlats, totalReviews, totalModerators] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.flat.count(),
+        prisma.review.count(),
+        prisma.user.count({ where: { role: "MODERATOR" } }),
+      ]);
 
-    return NextResponse.json({ totalUsers, totalFlats, totalReviews, totalModerators });
+    return NextResponse.json({
+      totalUsers,
+      totalFlats,
+      totalReviews,
+      totalModerators,
+    });
   } catch (error) {
     console.error("Admin stats error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -30,6 +30,9 @@ export async function GET() {
     return NextResponse.json({ flats });
   } catch (error) {
     console.error("Moderator content flats error:", error);
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
