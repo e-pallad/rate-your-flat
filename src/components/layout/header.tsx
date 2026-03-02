@@ -55,7 +55,12 @@ export function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link href={session.user.role === "LANDLORD" ? "/landlord" : "/renter"}>
+                    <Link href={
+                      session.user.role === "ADMIN" ? "/admin"
+                      : session.user.role === "MODERATOR" ? "/moderator"
+                      : session.user.role === "LANDLORD" ? "/landlord"
+                      : "/renter"
+                    }>
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       {t("nav.dashboard")}
                     </Link>
@@ -97,7 +102,12 @@ export function Header() {
                 </Link>
                 {session ? (
                   <Link
-                    href={session.user.role === "LANDLORD" ? "/landlord" : "/renter"}
+                    href={
+                      session.user.role === "ADMIN" ? "/admin"
+                      : session.user.role === "MODERATOR" ? "/moderator"
+                      : session.user.role === "LANDLORD" ? "/landlord"
+                      : "/renter"
+                    }
                     className="flex items-center gap-2"
                   >
                     <LayoutDashboard className="h-4 w-4" />
