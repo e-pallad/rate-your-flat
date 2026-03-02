@@ -25,7 +25,11 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ reviews });
+    const sanitized = reviews.map((r) =>
+      r.isAnonymous ? { ...r, user: { name: null, email: null } } : r
+    );
+
+    return NextResponse.json({ reviews: sanitized });
   } catch (error) {
     console.error("Moderator content reviews error:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });

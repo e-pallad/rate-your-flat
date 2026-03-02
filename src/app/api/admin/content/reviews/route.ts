@@ -21,6 +21,7 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
+    // Admins intentionally receive full identity for all reviews, including anonymous ones (per privacy policy)
     return NextResponse.json({ reviews });
   } catch (error) {
     console.error("Admin content reviews error:", error);

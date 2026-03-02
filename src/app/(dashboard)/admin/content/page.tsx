@@ -25,7 +25,7 @@ type ReviewItem = {
   isAnonymous: boolean;
   createdAt: string;
   flat: { address: string; city: string; slug: string };
-  user: { name: string; email: string };
+  user: { name: string | null; email: string | null };
 };
 
 export default function AdminContentPage() {
@@ -199,7 +199,10 @@ export default function AdminContentPage() {
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
                             {review.isAnonymous ? "Anonymous" : review.user.name}
-                            {" \u00b7 "}{review.user.email}
+                            {/* Admins may see real identity of anonymous reviewers per the platform privacy policy */}
+                            {review.user.email && (
+                              <>{" \u00b7 "}{review.user.email}</>
+                            )}
                           </p>
                         </div>
                         <p className="text-xs text-muted-foreground">

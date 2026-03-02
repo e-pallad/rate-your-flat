@@ -25,7 +25,7 @@ type ReviewItem = {
   isAnonymous: boolean;
   createdAt: string;
   flat: { address: string; city: string; slug: string };
-  user: { name: string; email: string };
+  user: { name: string | null; email: string | null };
 };
 
 export default function ModeratorDashboard() {
@@ -194,7 +194,9 @@ export default function ModeratorDashboard() {
                           </CardTitle>
                           <p className="text-sm text-muted-foreground">
                             {review.isAnonymous ? "Anonymous" : review.user.name}
-                            {" \u00b7 "}{review.user.email}
+                            {!review.isAnonymous && review.user.email && (
+                              <>{" \u00b7 "}{review.user.email}</>
+                            )}
                           </p>
                         </div>
                         <p className="text-xs text-muted-foreground">
