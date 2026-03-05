@@ -88,7 +88,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
+      {
+        message:
+          "If this email is not already registered, your account has been created.",
+      },
       { status: 201 },
     );
   } catch (error) {
