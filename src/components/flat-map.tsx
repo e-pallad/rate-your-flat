@@ -21,7 +21,7 @@ function fixLeafletIcon() {
   });
 }
 
-interface FlatMapProps {
+export interface FlatMapProps {
   latitude: number;
   longitude: number;
   label: string;

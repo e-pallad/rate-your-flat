@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,11 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { parseRatings, averageOverall } from "@/lib/ratings";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { LandlordResponseForm } from "@/components/landlord-response-form";
-
-const FlatMap = dynamic(
-  () => import("@/components/flat-map").then((m) => m.FlatMap),
-  { ssr: false },
-);
+import { FlatMapClient } from "@/components/flat-map-client";
 
 const REVIEWS_PER_PAGE = 10;
 
@@ -297,7 +292,7 @@ export default async function FlatPage({
                 <CardTitle>{t("flat.map")}</CardTitle>
               </CardHeader>
               <CardContent className="p-0 overflow-hidden rounded-b-lg">
-                <FlatMap
+                <FlatMapClient
                   latitude={flat.latitude}
                   longitude={flat.longitude}
                   label={`${flat.address}, ${flat.city}`}
