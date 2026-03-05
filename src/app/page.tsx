@@ -111,21 +111,18 @@ export default async function HomePage({
   });
   const cities = cityRows.map((r) => r.city);
 
-  const totalCount = await prisma.flat.count({ where });
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const page = Math.min(rawPage, totalPages);
-
-  const flats = await prisma.flat.findMany({
+  // Fetch ALL matching flats (with ratings) so we can apply the min-rating filter
+  // before computing pagination totals. Without this, totalPages would be wrong
+  // when minRating is active (DB count ignores the rating filter).
+  const allFlats = await prisma.flat.findMany({
     where,
     include: {
       reviews: { select: { ratings: true } },
     },
     orderBy: { createdAt: "desc" },
-    take: PAGE_SIZE,
-    skip: (page - 1) * PAGE_SIZE,
   });
 
-  const flatsWithRating = flats.map((flat) => {
+  const allFlatsWithRating = allFlats.map((flat) => {
     const ratings = flat.reviews.map((r) => {
       try {
         return JSON.parse(r.ratings) as Record<string, number>;
@@ -139,17 +136,24 @@ export default async function HomePage({
         : 0;
     return {
       ...flat,
-      avgRating: avgRating,
+      avgRating,
       avgRatingDisplay: avgRating.toFixed(1),
       reviewCount: flat.reviews.length,
     };
   });
 
-  // Apply min-rating filter client-side (after DB query so pagination is exact for DB filters)
+  // Apply min-rating filter over the full result set so totalPages is accurate
   const filtered =
     minRating > 0
-      ? flatsWithRating.filter((f) => f.avgRating >= minRating)
-      : flatsWithRating;
+      ? allFlatsWithRating.filter((f) => f.avgRating >= minRating)
+      : allFlatsWithRating;
+
+  const totalCount = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const page = Math.min(rawPage, totalPages);
+
+  // Slice the filtered results for the current page
+  const pageFlats = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const t = getTranslation;
 
@@ -213,13 +217,13 @@ export default async function HomePage({
         </form>
       </div>
 
-      {filtered.length === 0 ? (
+      {pageFlats.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {t("common.noResults")}
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((flat) => (
+          {pageFlats.map((flat) => (
             <Link key={flat.id} href={`/flat/${flat.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
                 <CardHeader>
