@@ -106,12 +106,23 @@ export async function POST(
       throw txError;
     }
 
-    // DB slot reserved — now persist the file. If writeFile throws, the DB
-    // record is left without a backing file, but that is recoverable; the
-    // inverse (file without DB record) is not (orphaned public asset).
+    // DB slot reserved — now persist the file.
+    // If writeFile fails (disk full, permissions, etc.) we delete the DB row
+    // so the user doesn't permanently lose an upload slot and no broken record
+    // is left pointing at a non-existent file.
     const uploadDir = join(process.cwd(), "public", "uploads");
     await mkdir(uploadDir, { recursive: true });
-    await writeFile(join(uploadDir, filename), buffer);
+    try {
+      await writeFile(join(uploadDir, filename), buffer);
+    } catch (fsError) {
+      await prisma.flatImage.delete({ where: { id: image.id } }).catch(() => {
+        // Best-effort cleanup — log but don't mask the original error
+        console.error(
+          "Failed to roll back FlatImage row after writeFile error",
+        );
+      });
+      throw fsError;
+    }
 
     return NextResponse.json(
       { id: image.id, path: relativePath },

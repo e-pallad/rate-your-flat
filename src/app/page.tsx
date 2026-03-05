@@ -90,19 +90,6 @@ export default async function HomePage({
   );
   const rawPage = Math.max(1, parseInt(params.page || "1", 10) || 1);
 
-  // Build where clause: case-insensitive full-text search + optional city filter
-  const textConditions = query
-    ? [
-        { address: { contains: query, mode: "insensitive" as const } },
-        { city: { contains: query, mode: "insensitive" as const } },
-        { postalCode: { contains: query, mode: "insensitive" as const } },
-      ]
-    : undefined;
-
-  const where: Record<string, unknown> = {};
-  if (textConditions) where.OR = textConditions;
-  if (cityFilter) where.city = { equals: cityFilter, mode: "insensitive" };
-
   // Fetch distinct cities for the filter dropdown
   const cityRows = await prisma.flat.findMany({
     select: { city: true },
@@ -111,49 +98,102 @@ export default async function HomePage({
   });
   const cities = cityRows.map((r) => r.city);
 
-  // Fetch ALL matching flats (with ratings) so we can apply the min-rating filter
-  // before computing pagination totals. Without this, totalPages would be wrong
-  // when minRating is active (DB count ignores the rating filter).
-  const allFlats = await prisma.flat.findMany({
-    where,
-    include: {
-      reviews: { select: { ratings: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  // Build parameterised WHERE fragments for text search and city filter.
+  // We use $queryRaw so Postgres can compute AVG(overall) in the same query
+  // and apply the HAVING clause, keeping both pagination and min-rating correct
+  // without loading the full table into Node memory.
+  const conditions: string[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sqlParams: any[] = [];
+  let paramIdx = 1;
 
-  const allFlatsWithRating = allFlats.map((flat) => {
-    const ratings = flat.reviews.map((r) => {
-      try {
-        return JSON.parse(r.ratings) as Record<string, number>;
-      } catch {
-        return {} as Record<string, number>;
-      }
-    });
-    const avgRating =
-      ratings.length > 0
-        ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) / ratings.length
-        : 0;
-    return {
-      ...flat,
-      avgRating,
-      avgRatingDisplay: avgRating.toFixed(1),
-      reviewCount: flat.reviews.length,
-    };
-  });
+  if (query) {
+    conditions.push(
+      `(f.address ILIKE $${paramIdx} OR f.city ILIKE $${paramIdx} OR f."postalCode" ILIKE $${paramIdx})`,
+    );
+    sqlParams.push(`%${query}%`);
+    paramIdx++;
+  }
+  if (cityFilter) {
+    conditions.push(`f.city ILIKE $${paramIdx}`);
+    sqlParams.push(cityFilter);
+    paramIdx++;
+  }
 
-  // Apply min-rating filter over the full result set so totalPages is accurate
-  const filtered =
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // HAVING clause for min-rating (only when requested)
+  const havingClause =
     minRating > 0
-      ? allFlatsWithRating.filter((f) => f.avgRating >= minRating)
-      : allFlatsWithRating;
+      ? `HAVING COALESCE(AVG((r.ratings::jsonb->>'overall')::float), 0) >= $${paramIdx}`
+      : "";
+  if (minRating > 0) {
+    sqlParams.push(minRating);
+    paramIdx++;
+  }
 
-  const totalCount = filtered.length;
+  // Count query — tells us totalPages before fetching rows
+  const countSql = `
+    SELECT COUNT(*) AS total
+    FROM "Flat" f
+    LEFT JOIN "Review" r ON r."flatId" = f.id
+    ${whereClause}
+    GROUP BY f.id
+    ${havingClause}
+  `;
+  // $queryRaw returns an array; wrap in another SELECT to get a scalar count
+  const countResult = await prisma.$queryRawUnsafe<{ total: bigint }[]>(
+    `SELECT COUNT(*) AS total FROM (${countSql}) sub`,
+    ...sqlParams,
+  );
+  const totalCount = Number(countResult[0]?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const page = Math.min(rawPage, totalPages);
 
-  // Slice the filtered results for the current page
-  const pageFlats = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // Paginated data query
+  const offsetVal = (page - 1) * PAGE_SIZE;
+  const dataParams = [...sqlParams, PAGE_SIZE, offsetVal];
+  type FlatRow = {
+    id: string;
+    slug: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    landlordId: string | null;
+    verified: boolean;
+    avgRating: number;
+    reviewCount: bigint;
+  };
+  const pageFlats = await prisma.$queryRawUnsafe<FlatRow[]>(
+    `
+    SELECT
+      f.id,
+      f.slug,
+      f.address,
+      f.city,
+      f."postalCode",
+      f."landlordId",
+      f.verified,
+      COALESCE(AVG((r.ratings::jsonb->>'overall')::float), 0) AS "avgRating",
+      COUNT(r.id) AS "reviewCount"
+    FROM "Flat" f
+    LEFT JOIN "Review" r ON r."flatId" = f.id
+    ${whereClause}
+    GROUP BY f.id
+    ${havingClause}
+    ORDER BY f."createdAt" DESC
+    LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
+    `,
+    ...dataParams,
+  );
+
+  // Normalise BigInt reviewCount and pre-format avgRating for the template
+  const flatsForDisplay = pageFlats.map((f) => ({
+    ...f,
+    reviewCount: Number(f.reviewCount),
+    avgRatingDisplay: Number(f.avgRating).toFixed(1),
+  }));
 
   const t = getTranslation;
 
@@ -217,13 +257,13 @@ export default async function HomePage({
         </form>
       </div>
 
-      {pageFlats.length === 0 ? (
+      {flatsForDisplay.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {t("common.noResults")}
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {pageFlats.map((flat) => (
+          {flatsForDisplay.map((flat) => (
             <Link key={flat.id} href={`/flat/${flat.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
                 <CardHeader>
