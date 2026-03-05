@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n";
+import { VERSION } from "@/lib/version";
 
 export function Footer() {
   const { t, changeLanguage } = useTranslation();
@@ -78,6 +79,8 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
           &copy; {new Date().getFullYear()} {t("common.appName")}.{" "}
           {t("footer.allRightsReserved")}
+          {" · "}
+          {t("footer.version")} {VERSION}
         </div>
       </div>
     </footer>
