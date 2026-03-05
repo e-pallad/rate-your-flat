@@ -70,7 +70,7 @@ export default async function HomePage({
 }) {
   const params = await searchParams;
   const query = (params.q || "").trim().slice(0, 100);
-  const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
+  const rawPage = Math.max(1, parseInt(params.page || "1", 10) || 1);
 
   const where = query
     ? {
@@ -82,20 +82,19 @@ export default async function HomePage({
       }
     : {};
 
-  const [flats, totalCount] = await Promise.all([
-    prisma.flat.findMany({
-      where,
-      include: {
-        reviews: { select: { ratings: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: PAGE_SIZE,
-      skip: (page - 1) * PAGE_SIZE,
-    }),
-    prisma.flat.count({ where }),
-  ]);
-
+  const totalCount = await prisma.flat.count({ where });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const page = Math.min(rawPage, totalPages);
+
+  const flats = await prisma.flat.findMany({
+    where,
+    include: {
+      reviews: { select: { ratings: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
+  });
 
   const flatsWithRating = flats.map((flat) => {
     const ratings = flat.reviews.map((r) => {

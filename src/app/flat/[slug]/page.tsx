@@ -61,7 +61,7 @@ export default async function FlatPage({
   const session = await auth();
   const { slug } = await params;
   const { page: pageParam } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
+  const rawPage = Math.max(1, parseInt(pageParam || "1", 10) || 1);
   const t = getTranslation;
 
   const flat = await prisma.flat.findUnique({
@@ -75,7 +75,13 @@ export default async function FlatPage({
     notFound();
   }
 
-  const [reviews, totalReviews, userReview] = await Promise.all([
+  const totalReviews = await prisma.review.count({
+    where: { flatId: flat.id },
+  });
+  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
+  const page = Math.min(rawPage, totalPages);
+
+  const [reviews, userReview] = await Promise.all([
     prisma.review.findMany({
       where: { flatId: flat.id },
       include: {
@@ -86,7 +92,6 @@ export default async function FlatPage({
       take: REVIEWS_PER_PAGE,
       skip: (page - 1) * REVIEWS_PER_PAGE,
     }),
-    prisma.review.count({ where: { flatId: flat.id } }),
     session
       ? prisma.review.findFirst({
           where: { flatId: flat.id, userId: session.user.id },
@@ -94,8 +99,6 @@ export default async function FlatPage({
         })
       : Promise.resolve(null),
   ]);
-
-  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
 
   // Compute average from ALL reviews (not just current page)
   const allRatingsRaw = await prisma.review.findMany({
