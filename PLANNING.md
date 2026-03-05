@@ -8,15 +8,15 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ## Current Goals (This Sprint/Iteration)
 
-- [ ] Dark mode - auto-detect system preference (no manual toggle needed)
-- [ ] Add error/loading boundaries - `error.tsx` and `loading.tsx` for better UX
-- [ ] Pagination for flat listings and reviews
+- [x] Dark mode - auto-detect system preference (no manual toggle needed)
+- [x] Add error/loading boundaries - `error.tsx` and `loading.tsx` for better UX
+- [x] Pagination for flat listings and reviews
 
 ---
 
 ## In Progress
 
-- [ ] PR #4: Update README with completed items and fix tech stack notes (`docs/update-readme`)
+_(nothing currently in progress)_
 
 ---
 
@@ -53,7 +53,6 @@ A platform for tenants to rate and review rental flats, helping others make info
 - [ ] **CSRF protection** - Custom API routes do not validate CSRF tokens
 - [ ] **Verification code generation** - Generate code at flat creation time for the claim flow
 - [ ] **JWT role staleness** - Role in JWT not updated when admin changes a user's role
-- [ ] **Add error/loading boundaries** - Create `error.tsx` and `loading.tsx` for better UX
 - [ ] **Standardize translations** - Server components use local inline dict; consider consolidating
 
 ### Bug Fixes
@@ -81,6 +80,10 @@ A platform for tenants to rate and review rental flats, helping others make info
 - [x] Unit test suite (Vitest) — 24 tests across slug, ratings, i18n ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
 - [x] Prettier formatting enforcement across all source files ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
 - [x] Extracted `generateSlug`, `parseRatings`, `averageOverall` to `src/lib/` ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
+- [x] Dark mode — `next-themes` ThemeProvider wired with `defaultTheme=system`
+- [x] Error/loading boundaries — `error.tsx` and `loading.tsx` for root, flat detail, and auth routes
+- [x] Pagination — flat listings (12/page) and reviews (10/page)
+- [x] README/SPEC/PLANNING docs updated — stale tech stack, SQLite references, completed items ([PR #4 equivalent](https://github.com/e-pallad/rate-your-flat/tree/docs/update-readme))
 
 ---
 

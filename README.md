@@ -25,8 +25,8 @@ A Next.js web application for tenants to rate and review rental flats. Users can
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database (or SQLite for development)
-- Docker (optional, for PostgreSQL)
+- PostgreSQL database (via Docker or a hosted instance)
+- Docker (recommended — `docker compose up db -d` starts the DB)
 
 ### Installation
 
@@ -92,6 +92,9 @@ src/
 - [x] Admin dashboard for content moderation ([PR #1](https://github.com/e-pallad/rate-your-flat/pull/1))
 - [x] CI/CD pipeline with GitHub Actions (lint, typecheck, build, test) ([PR #2](https://github.com/e-pallad/rate-your-flat/pull/2))
 - [x] Unit test suite (Vitest) and Prettier formatting enforcement ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
+- [x] Dark mode (system auto-detect via next-themes)
+- [x] Error and loading boundaries (`error.tsx` / `loading.tsx`)
+- [x] Pagination for flat listings and reviews
 - [ ] Advanced search and filter functionality (by price, location, amenities)
 - [ ] Map integration to display flat locations
 - [ ] Favorite/bookmark flats for later
