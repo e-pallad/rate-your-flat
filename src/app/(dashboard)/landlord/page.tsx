@@ -63,12 +63,13 @@ export default async function LandlordDashboard() {
     },
     orderBy: { createdAt: "desc" },
   });
+  type FlatWithReviews = (typeof flats)[number];
 
-  const totalReviews = flats.reduce(
-    (acc, flat) => acc + flat.reviews.length,
-    0,
+  let totalReviews = 0;
+  for (const flat of flats) totalReviews += flat.reviews.length;
+  const unverifiedFlats = flats.filter(
+    (flat: FlatWithReviews) => !flat.verified,
   );
-  const unverifiedFlats = flats.filter((flat) => !flat.verified);
   const t = getTranslation;
 
   return (
