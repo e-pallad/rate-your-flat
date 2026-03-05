@@ -2,12 +2,17 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { landlordResponseSchema } from "@/lib/validations";
+import { checkCsrf } from "@/lib/rate-limit";
 
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    if (!checkCsrf(req)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
     const session = await auth();
     if (!session || session.user.role !== "LANDLORD") {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

@@ -54,3 +54,16 @@ export function getClientIdentifier(req: Request): string {
   // a rate-limit bucket, avoiding a denial-of-service via bucket exhaustion.
   return `unknown-${crypto.randomUUID()}`;
 }
+
+/**
+ * Simple CSRF check: custom API routes require the `x-requested-with`
+ * header to be present. Browsers never send this header for cross-origin
+ * simple requests, so its presence proves the call was made by our own
+ * JavaScript (fetch / XMLHttpRequest) rather than a cross-site form POST.
+ *
+ * Returns true when the request passes the check, false when it should
+ * be rejected (caller should return 403).
+ */
+export function checkCsrf(req: Request): boolean {
+  return req.headers.get("x-requested-with") === "XMLHttpRequest";
+}

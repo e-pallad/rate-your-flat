@@ -1,0 +1,145 @@
+import { NextResponse } from "next/server";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
+import { auth } from "@/lib/auth";
+import prisma from "@/lib/db";
+import { checkCsrf } from "@/lib/rate-limit";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const MAX_IMAGES_PER_REVIEW = 5;
+
+// Derive extension from validated MIME type — never from user-controlled file.name
+// to prevent storing malicious .html/.js files in public/uploads/.
+const MIME_TO_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    if (!checkCsrf(req)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: reviewId } = await params;
+
+    // Verify the review belongs to the current user
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+
+    if (!review) {
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 },
+      );
+    }
+
+    if (review.userId !== session.user.id) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
+    const formData = await req.formData();
+    const file = formData.get("file");
+
+    if (!file || typeof file === "string") {
+      return NextResponse.json(
+        { message: "No file provided" },
+        { status: 400 },
+      );
+    }
+
+    if (!ALLOWED_MIME.includes(file.type)) {
+      return NextResponse.json(
+        { message: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" },
+        { status: 400 },
+      );
+    }
+
+    // Reject oversized uploads BEFORE reading into memory so a malicious
+    // large payload cannot cause memory pressure / OOM. file.size comes from
+    // multipart metadata and is available without buffering the body.
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { message: "File too large. Maximum 5 MB" },
+        { status: 400 },
+      );
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Use MIME type to derive extension — never trust file.name (XSS prevention)
+    const ext = MIME_TO_EXT[file.type] ?? "jpg";
+    const filename = `${reviewId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const relativePath = `/uploads/${filename}`;
+
+    // Atomically check the per-review image quota and reserve the DB slot
+    // BEFORE writing to disk. SERIALIZABLE isolation ensures two concurrent
+    // uploads cannot both read count < 5 and both insert — one will be
+    // retried/aborted by Postgres, reliably enforcing the cap.
+    let image: { id: string };
+    try {
+      image = await prisma.$transaction(
+        async (tx) => {
+          const count = await tx.flatImage.count({ where: { reviewId } });
+          if (count >= MAX_IMAGES_PER_REVIEW) {
+            throw new Error("TOO_MANY");
+          }
+          return tx.flatImage.create({
+            data: { reviewId, filename, path: relativePath },
+            select: { id: true },
+          });
+        },
+        { isolationLevel: "Serializable" },
+      );
+    } catch (txError) {
+      if (txError instanceof Error && txError.message === "TOO_MANY") {
+        return NextResponse.json(
+          { message: `Maximum ${MAX_IMAGES_PER_REVIEW} images per review` },
+          { status: 400 },
+        );
+      }
+      throw txError;
+    }
+
+    // DB slot reserved — now persist the file.
+    // If writeFile fails (disk full, permissions, etc.) we delete the DB row
+    // so the user doesn't permanently lose an upload slot and no broken record
+    // is left pointing at a non-existent file.
+    const uploadDir = join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+    try {
+      await writeFile(join(uploadDir, filename), buffer);
+    } catch (fsError) {
+      await prisma.flatImage.delete({ where: { id: image.id } }).catch(() => {
+        // Best-effort cleanup — log but don't mask the original error
+        console.error(
+          "Failed to roll back FlatImage row after writeFile error",
+        );
+      });
+      throw fsError;
+    }
+
+    return NextResponse.json(
+      { id: image.id, path: relativePath },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Image upload error:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}

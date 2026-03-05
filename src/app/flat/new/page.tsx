@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
 import {
   Card,
@@ -19,6 +20,10 @@ export default function NewFlatPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [created, setCreated] = useState<{
+    slug: string;
+    verificationCode: string;
+  } | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,7 +42,10 @@ export default function NewFlatPage() {
     try {
       const res = await fetch("/api/flats", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-requested-with": "XMLHttpRequest",
+        },
         body: JSON.stringify(data),
       });
 
@@ -46,13 +54,52 @@ export default function NewFlatPage() {
         throw new Error(body.message || t("common.error"));
       }
 
-      const { slug } = await res.json();
-      router.push(`/flat/${slug}`);
+      const { slug, verificationCode } = await res.json();
+      setCreated({ slug, verificationCode });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      const msg = err instanceof Error ? err.message : t("common.error");
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
+  }
+
+  if (created) {
+    return (
+      <div className="container py-8 max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">{t("flat.flatCreated")}</CardTitle>
+            <CardDescription>{t("flat.flatCreatedSubtitle")}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
+              <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                {t("flat.verificationCodeLabel")}
+              </p>
+              <p className="font-mono text-lg font-bold tracking-widest text-yellow-900 dark:text-yellow-100 select-all">
+                {created.verificationCode}
+              </p>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-2">
+                {t("flat.verificationCodeHint")}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={() => router.push(`/flat/${created.slug}`)}>
+                {t("flat.viewFlat")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/landlord")}
+              >
+                {t("nav.dashboard")}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (

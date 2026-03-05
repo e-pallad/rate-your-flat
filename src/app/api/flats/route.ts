@@ -3,6 +3,7 @@ import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { flatSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/slug";
+import { checkCsrf } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   try {
@@ -60,6 +61,10 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    if (!checkCsrf(req)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
     const session = await auth();
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -79,6 +84,35 @@ export async function POST(req: Request) {
     const isLandlord = session.user.role === "LANDLORD";
     const slug = generateSlug(address.trim(), city.trim());
 
+    const verificationCode = crypto.randomUUID();
+
+    // Attempt geocoding via Nominatim (best-effort; failures are silently ignored)
+    let latitude: number | null = null;
+    let longitude: number | null = null;
+    try {
+      const query = encodeURIComponent(
+        `${address.trim()}, ${postalCode.trim()} ${city.trim()}, ${country ?? "Germany"}`,
+      );
+      const geoRes = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+        {
+          headers: {
+            "User-Agent": "RateYourFlat/1.0 (contact@rateyourflat.de)",
+          },
+          signal: AbortSignal.timeout(5000),
+        },
+      );
+      if (geoRes.ok) {
+        const geoData = await geoRes.json();
+        if (geoData.length > 0) {
+          latitude = parseFloat(geoData[0].lat);
+          longitude = parseFloat(geoData[0].lon);
+        }
+      }
+    } catch {
+      // geocoding failure is non-fatal
+    }
+
     const flat = await prisma.flat.create({
       data: {
         slug,
@@ -90,10 +124,16 @@ export async function POST(req: Request) {
         landlordId: isLandlord ? session.user.id : null,
         submittedById: session.user.id,
         verified: false,
+        verificationCode,
+        latitude,
+        longitude,
       },
     });
 
-    return NextResponse.json({ slug: flat.slug }, { status: 201 });
+    return NextResponse.json(
+      { slug: flat.slug, verificationCode: flat.verificationCode },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error creating flat:", error);
     return NextResponse.json(
