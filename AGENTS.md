@@ -251,8 +251,8 @@ UPDATE "User" SET role = 'ADMIN' WHERE email = 'your@email.com';
 
 The following security improvements are noted but not yet implemented:
 
-- **Rate limiting**: Registration, login, and review submission endpoints have no rate limiting. Add middleware (e.g. `next-rate-limit` or an edge middleware solution) before production.
-- **Email enumeration**: The register endpoint returns `409 Conflict` with a message that reveals whether an email is already registered. Consider returning a generic message.
+- **Rate limiting**: Registration endpoint has in-memory rate limiting (`src/lib/rate-limit.ts`, 5 req/60 s). Login and review submission endpoints still have no rate limiting — add middleware before production.
+- ~~**Email enumeration**~~: Fixed — the register endpoint now returns `201` with an ambiguous message (`"If this email is not already registered, your account has been created."`) for duplicate emails, so callers cannot enumerate registered addresses.
 - **CSRF protection**: NextAuth handles its own CSRF tokens, but custom API routes (`/api/flats`, `/api/flats/[slug]/reviews`) do not validate CSRF tokens. Use `SameSite=Strict` cookies or add a custom header check.
 - **Verification code generation**: `POST /api/flats` currently stores `verificationCode: null`. For the claim flow, generate a random code (e.g. `crypto.randomUUID()`) at creation time and display it to the submitter so a landlord can claim the flat later.
 - **JWT role staleness after role change**: When an admin changes a user's role via `PATCH /api/admin/users/[id]`, the user's existing JWT still carries the old role until they log out and back in (up to 30 days). The middleware in `src/middleware.ts` checks user existence but does not re-read the role on each request. Fix options: (a) re-fetch the role from the DB in the `jwt` callback on every token refresh, or (b) switch to `strategy: "database"` sessions so the role is always read live from the DB.
@@ -266,7 +266,7 @@ The following security improvements are noted but not yet implemented:
 
 ### Prisma Client not generated
 ```bash
-npx prisma generate
+./node_modules/.bin/prisma generate
 ```
 
 ### Database connection error
