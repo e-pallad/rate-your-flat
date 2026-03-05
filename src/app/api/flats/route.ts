@@ -2,15 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { flatSchema } from "@/lib/validations";
-import { randomBytes } from "crypto";
-
-function generateSlug(address: string): string {
-  const slugify = (text: string) =>
-    text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 50);
-  const baseSlug = slugify(address);
-  const uniqueSuffix = randomBytes(4).toString("hex");
-  return `${baseSlug}-${uniqueSuffix}`;
-}
+import { generateSlug } from "@/lib/slug";
 
 export async function GET(req: Request) {
   try {
@@ -22,7 +14,10 @@ export async function GET(req: Request) {
     const [flats, total] = await Promise.all([
       prisma.flat.findMany({
         where: { verified: true },
-        include: { landlord: { select: { name: true } }, reviews: { select: { ratings: true } } },
+        include: {
+          landlord: { select: { name: true } },
+          reviews: { select: { ratings: true } },
+        },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -31,9 +26,23 @@ export async function GET(req: Request) {
     ]);
 
     const flatsWithRating = flats.map((flat) => {
-      const ratings = flat.reviews.map((r) => JSON.parse(r.ratings));
-      const avgRating = ratings.length > 0 ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) / ratings.length : 0;
-      return { ...flat, avgRating: parseFloat(avgRating.toFixed(1)), reviewCount: flat.reviews.length };
+      const ratings = flat.reviews.map((r) => {
+        try {
+          return JSON.parse(r.ratings);
+        } catch {
+          return {};
+        }
+      });
+      const avgRating =
+        ratings.length > 0
+          ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) /
+            ratings.length
+          : 0;
+      return {
+        ...flat,
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        reviewCount: flat.reviews.length,
+      };
     });
 
     return NextResponse.json({
@@ -42,14 +51,17 @@ export async function GET(req: Request) {
     });
   } catch (error) {
     console.error("Error fetching flats:", error);
-    return NextResponse.json({ message: "Failed to fetch flats" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to fetch flats" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    if (!session || session.user.role !== "LANDLORD") {
+    if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
@@ -59,29 +71,34 @@ export async function POST(req: Request) {
     if (!validation.success) {
       return NextResponse.json(
         { message: "Validation failed", errors: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const { address, city, postalCode, country, description } = validation.data;
-    const slug = generateSlug(address);
+    const isLandlord = session.user.role === "LANDLORD";
+    const slug = generateSlug(address.trim(), city.trim());
 
     const flat = await prisma.flat.create({
       data: {
         slug,
-        address,
-        city,
-        postalCode,
-        country,
-        description,
-        landlordId: session.user.id,
-        verificationCode: randomBytes(16).toString("hex"),
+        address: address.trim(),
+        city: city.trim(),
+        postalCode: postalCode.trim(),
+        country: country ?? "Germany",
+        description: description?.trim() || null,
+        landlordId: isLandlord ? session.user.id : null,
+        submittedById: session.user.id,
+        verified: false,
       },
     });
 
-    return NextResponse.json({ message: "Flat created successfully", flat }, { status: 201 });
+    return NextResponse.json({ slug: flat.slug }, { status: 201 });
   } catch (error) {
     console.error("Error creating flat:", error);
-    return NextResponse.json({ message: "Failed to create flat" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

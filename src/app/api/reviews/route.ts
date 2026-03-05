@@ -12,7 +12,10 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     if (!flatId) {
-      return NextResponse.json({ message: "flatId is required" }, { status: 400 });
+      return NextResponse.json(
+        { message: "flatId is required" },
+        { status: 400 },
+      );
     }
 
     const [reviews, total] = await Promise.all([
@@ -26,13 +29,22 @@ export async function GET(req: Request) {
       prisma.review.count({ where: { flatId } }),
     ]);
 
+    // Mask reviewer name for anonymous reviews
+    const sanitized = reviews.map((r) => ({
+      ...r,
+      user: r.isAnonymous ? null : r.user,
+    }));
+
     return NextResponse.json({
-      reviews,
+      reviews: sanitized,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     });
   } catch (error) {
     console.error("Error fetching reviews:", error);
-    return NextResponse.json({ message: "Failed to fetch reviews" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to fetch reviews" },
+      { status: 500 },
+    );
   }
 }
 
@@ -49,7 +61,7 @@ export async function POST(req: Request) {
     if (!validation.success) {
       return NextResponse.json(
         { message: "Validation failed", errors: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -60,7 +72,10 @@ export async function POST(req: Request) {
     });
 
     if (existingReview) {
-      return NextResponse.json({ message: "You have already reviewed this flat" }, { status: 400 });
+      return NextResponse.json(
+        { message: "You have already reviewed this flat" },
+        { status: 400 },
+      );
     }
 
     const flat = await prisma.flat.findUnique({ where: { id: flatId } });
@@ -69,12 +84,24 @@ export async function POST(req: Request) {
     }
 
     const review = await prisma.review.create({
-      data: { flatId, userId: session.user.id, ratings: JSON.stringify(ratings), comment, isAnonymous },
+      data: {
+        flatId,
+        userId: session.user.id,
+        ratings: JSON.stringify(ratings),
+        comment,
+        isAnonymous,
+      },
     });
 
-    return NextResponse.json({ message: "Review submitted successfully", review }, { status: 201 });
+    return NextResponse.json(
+      { message: "Review submitted successfully", id: review.id },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error creating review:", error);
-    return NextResponse.json({ message: "Failed to create review" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to create review" },
+      { status: 500 },
+    );
   }
 }

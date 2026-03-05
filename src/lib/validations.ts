@@ -1,15 +1,17 @@
 import { z } from "zod";
 
-export const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string(),
-  role: z.enum(["LANDLORD", "RENTER"]),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+export const registerSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+    role: z.enum(["LANDLORD", "RENTER"]),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -39,7 +41,10 @@ export const reviewSchema = z.object({
 });
 
 export const landlordResponseSchema = z.object({
-  response: z.string().min(1, "Response is required").max(1000, "Response too long"),
+  response: z
+    .string()
+    .min(1, "Response is required")
+    .max(1000, "Response too long"),
 });
 
 export const verifyFlatSchema = z.object({

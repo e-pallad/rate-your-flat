@@ -3,7 +3,10 @@ import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { landlordResponseSchema } from "@/lib/validations";
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const session = await auth();
     if (!session || session.user.role !== "LANDLORD") {
@@ -17,28 +20,46 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (!validation.success) {
       return NextResponse.json(
         { message: "Validation failed", errors: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const review = await prisma.review.findUnique({ where: { id }, include: { flat: true } });
+    const review = await prisma.review.findUnique({
+      where: { id },
+      include: { flat: true },
+    });
 
     if (!review) {
-      return NextResponse.json({ message: "Review not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Review not found" },
+        { status: 404 },
+      );
     }
 
     if (review.flat.landlordId !== session.user.id) {
-      return NextResponse.json({ message: "Not authorized to respond to this review" }, { status: 403 });
+      return NextResponse.json(
+        { message: "Not authorized to respond to this review" },
+        { status: 403 },
+      );
     }
 
     const updatedReview = await prisma.review.update({
       where: { id },
-      data: { landlordResponse: validation.data.response, landlordResponseAt: new Date() },
+      data: {
+        landlordResponse: validation.data.response,
+        landlordResponseAt: new Date(),
+      },
     });
 
-    return NextResponse.json({ message: "Response submitted successfully", review: updatedReview });
+    return NextResponse.json({
+      message: "Response submitted successfully",
+      review: updatedReview,
+    });
   } catch (error) {
     console.error("Error submitting response:", error);
-    return NextResponse.json({ message: "Failed to submit response" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to submit response" },
+      { status: 500 },
+    );
   }
 }
