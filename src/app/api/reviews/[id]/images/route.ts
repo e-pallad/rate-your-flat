@@ -67,14 +67,17 @@ export async function POST(
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    if (buffer.byteLength > MAX_FILE_SIZE) {
+    // Reject oversized uploads BEFORE reading into memory so a malicious
+    // large payload cannot cause memory pressure / OOM. file.size comes from
+    // multipart metadata and is available without buffering the body.
+    if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
         { message: "File too large. Maximum 5 MB" },
         { status: 400 },
       );
     }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
 
     // Use MIME type to derive extension — never trust file.name (XSS prevention)
     const ext = MIME_TO_EXT[file.type] ?? "jpg";
@@ -82,20 +85,24 @@ export async function POST(
     const relativePath = `/uploads/${filename}`;
 
     // Atomically check the per-review image quota and reserve the DB slot
-    // BEFORE writing to disk. This prevents orphaned files when the quota is
-    // already at the limit or when a concurrent upload races ahead of us.
+    // BEFORE writing to disk. SERIALIZABLE isolation ensures two concurrent
+    // uploads cannot both read count < 5 and both insert — one will be
+    // retried/aborted by Postgres, reliably enforcing the cap.
     let image: { id: string };
     try {
-      image = await prisma.$transaction(async (tx) => {
-        const count = await tx.flatImage.count({ where: { reviewId } });
-        if (count >= MAX_IMAGES_PER_REVIEW) {
-          throw new Error("TOO_MANY");
-        }
-        return tx.flatImage.create({
-          data: { reviewId, filename, path: relativePath },
-          select: { id: true },
-        });
-      });
+      image = await prisma.$transaction(
+        async (tx) => {
+          const count = await tx.flatImage.count({ where: { reviewId } });
+          if (count >= MAX_IMAGES_PER_REVIEW) {
+            throw new Error("TOO_MANY");
+          }
+          return tx.flatImage.create({
+            data: { reviewId, filename, path: relativePath },
+            select: { id: true },
+          });
+        },
+        { isolationLevel: "Serializable" },
+      );
     } catch (txError) {
       if (txError instanceof Error && txError.message === "TOO_MANY") {
         return NextResponse.json(

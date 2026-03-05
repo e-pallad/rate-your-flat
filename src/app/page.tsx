@@ -123,10 +123,13 @@ export default async function HomePage({
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  // HAVING clause for min-rating (only when requested)
+  // HAVING clause for min-rating (only when requested).
+  // safe_jsonb_float() is a DB helper (see prisma/functions.sql) that wraps
+  // the ::jsonb cast in a PL/pgSQL exception handler so a single malformed
+  // ratings string returns NULL instead of throwing and 500-ing the page.
   const havingClause =
     minRating > 0
-      ? `HAVING COALESCE(AVG((r.ratings::jsonb->>'overall')::float), 0) >= $${paramIdx}`
+      ? `HAVING COALESCE(AVG(safe_jsonb_float(r.ratings, 'overall')), 0) >= $${paramIdx}`
       : "";
   if (minRating > 0) {
     sqlParams.push(minRating);
@@ -175,7 +178,7 @@ export default async function HomePage({
       f."postalCode",
       f."landlordId",
       f.verified,
-      COALESCE(AVG((r.ratings::jsonb->>'overall')::float), 0) AS "avgRating",
+      COALESCE(AVG(safe_jsonb_float(r.ratings, 'overall')), 0) AS "avgRating",
       COUNT(r.id) AS "reviewCount"
     FROM "Flat" f
     LEFT JOIN "Review" r ON r."flatId" = f.id
