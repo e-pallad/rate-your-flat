@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,19 +70,43 @@ export default function NewFlatPage() {
             )}
             <div className="space-y-2">
               <Label htmlFor="address">{t("flat.address")}</Label>
-              <Input id="address" name="address" type="text" required placeholder="Main Street 123" />
+              <Input
+                id="address"
+                name="address"
+                type="text"
+                required
+                placeholder="Main Street 123"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="city">{t("flat.city")}</Label>
-              <Input id="city" name="city" type="text" required placeholder="Berlin" />
+              <Input
+                id="city"
+                name="city"
+                type="text"
+                required
+                placeholder="Berlin"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="postalCode">{t("flat.postalCode")}</Label>
-              <Input id="postalCode" name="postalCode" type="text" required placeholder="10115" />
+              <Input
+                id="postalCode"
+                name="postalCode"
+                type="text"
+                required
+                placeholder="10115"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="country">{t("flat.country")}</Label>
-              <Input id="country" name="country" type="text" defaultValue="Germany" placeholder="Germany" />
+              <Input
+                id="country"
+                name="country"
+                type="text"
+                defaultValue="Germany"
+                placeholder="Germany"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">{t("flat.description")}</Label>
