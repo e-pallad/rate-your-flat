@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import prisma from "@/lib/db";
+import { checkRateLimit, getClientIdentifier } from "@/lib/rate-limit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
   try {
+    const identifier = getClientIdentifier(req);
+    const rateLimit = checkRateLimit(`register:${identifier}`, {
+      windowMs: 60 * 1000,
+      maxRequests: 5,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { message: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.resetIn / 1000)) } }
+      );
+    }
+
     const { name, email, password, role } = await req.json();
 
     if (!name || !email || !password || !role) {
