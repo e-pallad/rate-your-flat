@@ -79,16 +79,12 @@ export async function POST(
     // Use MIME type to derive extension — never trust file.name (XSS prevention)
     const ext = MIME_TO_EXT[file.type] ?? "jpg";
     const filename = `${reviewId}-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const uploadDir = join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(join(uploadDir, filename), buffer);
-
     const relativePath = `/uploads/${filename}`;
 
-    // Atomic count-check + create to prevent exceeding the per-review image limit
-    // under concurrent uploads.
-    let image: { id: string; path: string };
+    // Atomically check the per-review image quota and reserve the DB slot
+    // BEFORE writing to disk. This prevents orphaned files when the quota is
+    // already at the limit or when a concurrent upload races ahead of us.
+    let image: { id: string };
     try {
       image = await prisma.$transaction(async (tx) => {
         const count = await tx.flatImage.count({ where: { reviewId } });
@@ -97,7 +93,7 @@ export async function POST(
         }
         return tx.flatImage.create({
           data: { reviewId, filename, path: relativePath },
-          select: { id: true, path: true },
+          select: { id: true },
         });
       });
     } catch (txError) {
@@ -109,6 +105,13 @@ export async function POST(
       }
       throw txError;
     }
+
+    // DB slot reserved — now persist the file. If writeFile throws, the DB
+    // record is left without a backing file, but that is recoverable; the
+    // inverse (file without DB record) is not (orphaned public asset).
+    const uploadDir = join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+    await writeFile(join(uploadDir, filename), buffer);
 
     return NextResponse.json(
       { id: image.id, path: relativePath },

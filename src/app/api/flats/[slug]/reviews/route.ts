@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
-import {
-  checkRateLimit,
-  getClientIdentifier,
-  checkCsrf,
-} from "@/lib/rate-limit";
+import { checkRateLimit, checkCsrf } from "@/lib/rate-limit";
 
 interface RatingsInput {
   overall: number;
@@ -31,8 +27,17 @@ export async function POST(
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    // Rate limit: 10 review submissions per minute per IP
-    const rateResult = checkRateLimit(`review:${getClientIdentifier(req)}`, {
+    // Auth first so we have a stable user ID for rate-limiting.
+    // x-forwarded-for is absent in many deployments, making an IP-based key
+    // unreliable; the authenticated user ID is always present and unforgeable.
+    const session = await auth();
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 review submissions per minute per authenticated user
+    const rateResult = checkRateLimit(`review:${session.user.id}`, {
       windowMs: 60_000,
       maxRequests: 10,
     });
@@ -41,12 +46,6 @@ export async function POST(
         { message: "Too many requests. Please try again later." },
         { status: 429 },
       );
-    }
-
-    const session = await auth();
-
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     if (session.user.role !== "RENTER") {
