@@ -16,7 +16,12 @@ export async function POST(req: Request) {
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { message: "Too many requests. Please try again later." },
-        { status: 429, headers: { "Retry-After": String(Math.ceil(rateLimit.resetIn / 1000)) } }
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil(rateLimit.resetIn / 1000)),
+          },
+        },
       );
     }
 
