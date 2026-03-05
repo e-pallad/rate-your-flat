@@ -3,7 +3,13 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,21 +25,18 @@ export default function VerifyFlatPage({ params }: VerifyPageProps) {
   const flatId = resolvedParams.id;
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    const formData = new FormData(e.currentTarget);
-    const verificationCode = formData.get("verificationCode") as string;
-
     try {
       const res = await fetch(`/api/flats/${flatId}/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ verificationCode }),
+        body: JSON.stringify({ code: verificationCode }),
       });
 
       if (!res.ok) {
@@ -54,23 +57,29 @@ export default function VerifyFlatPage({ params }: VerifyPageProps) {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">{t("flat.verify")}</CardTitle>
-          <CardDescription>Enter the verification code for your flat</CardDescription>
+          <CardDescription>
+            Enter the verification code for your flat
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>
+              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+                {error}
+              </div>
             )}
             <input type="hidden" name="flatId" value={flatId} />
             <div className="space-y-2">
-              <Label htmlFor="verificationCode">{t("flat.verificationCode")}</Label>
+              <Label htmlFor="verificationCode">
+                {t("flat.verificationCode")}
+              </Label>
               <Input
                 id="verificationCode"
                 name="verificationCode"
                 type="text"
                 required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
                 placeholder={t("flat.enterCode")}
               />
             </div>

@@ -3,7 +3,13 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
@@ -33,15 +39,14 @@ export default function ReviewPage({ params }: ReviewPageProps) {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const flatId = formData.get("flatId") as string;
     const comment = formData.get("comment") as string;
     const isAnonymous = formData.get("isAnonymous") === "on";
 
     try {
-      const res = await fetch("/api/reviews", {
+      const res = await fetch(`/api/flats/${slug}/reviews`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flatId, ratings, comment, isAnonymous }),
+        body: JSON.stringify({ ...ratings, comment, isAnonymous }),
       });
 
       if (!res.ok) {
@@ -72,10 +77,10 @@ export default function ReviewPage({ params }: ReviewPageProps) {
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-6">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">{error}</div>
+              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+                {error}
+              </div>
             )}
-
-            <input type="hidden" name="flatId" id="flatId" />
 
             <div className="space-y-4">
               <h3 className="font-medium">{t("review.ratings")}</h3>
@@ -97,7 +102,9 @@ export default function ReviewPage({ params }: ReviewPageProps) {
                           type="button"
                           onClick={() => handleRatingChange(key, star)}
                           className={`text-2xl ${
-                            star <= ratings[key as keyof typeof ratings] ? "text-yellow-500" : "text-gray-300"
+                            star <= ratings[key as keyof typeof ratings]
+                              ? "text-yellow-500"
+                              : "text-gray-300"
                           }`}
                         >
                           ★
@@ -122,14 +129,23 @@ export default function ReviewPage({ params }: ReviewPageProps) {
             </div>
 
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="isAnonymous" name="isAnonymous" className="w-4 h-4" />
+              <input
+                type="checkbox"
+                id="isAnonymous"
+                name="isAnonymous"
+                className="w-4 h-4"
+              />
               <Label htmlFor="isAnonymous" className="cursor-pointer">
                 {t("review.anonymous")}
               </Label>
             </div>
 
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
                 {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={loading}>
