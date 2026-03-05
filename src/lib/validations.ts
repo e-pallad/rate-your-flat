@@ -48,7 +48,7 @@ export const landlordResponseSchema = z.object({
 });
 
 export const verifyFlatSchema = z.object({
-  verificationCode: z.string().min(1, "Verification code is required"),
+  code: z.string().min(1, "Verification code is required"),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
