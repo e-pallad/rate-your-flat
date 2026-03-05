@@ -35,6 +35,23 @@ p.\$executeRawUnsafe(fs.readFileSync('prisma/functions.sql','utf8')).then(()=>p.
 "
 ```
 
+### Releases
+The project uses **release-it** with `@release-it/conventional-changelog` for automated versioned GitHub releases.
+
+```bash
+# Dry run — preview version bump, changelog diff, and GitHub release without making changes
+npx release-it --dry-run
+
+# Cut a release (bumps version in package.json, writes CHANGELOG.md, creates git tag + GitHub release)
+npm run release
+```
+
+- Configuration lives in `release.config.js` at the project root.
+- Requires a `GITHUB_TOKEN` with repo write access (or `gh auth login`).
+- Must be run on a clean working directory on the `master` branch.
+- npm publish is disabled — this is a private web app, not an npm package.
+- Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org/) for the changelog to generate correctly (`feat:`, `fix:`, `chore:`, `docs:`, `ci:`, etc.).
+
 ### Code Quality
 ```bash
 npm run lint        # Run ESLint
