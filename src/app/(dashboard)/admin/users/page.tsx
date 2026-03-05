@@ -68,7 +68,10 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-requested-with": "XMLHttpRequest",
+        },
         body: JSON.stringify({ role }),
       });
       if (!res.ok) {
@@ -89,6 +92,7 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: "DELETE",
+        headers: { "x-requested-with": "XMLHttpRequest" },
       });
       if (!res.ok) {
         const data = await res.json();

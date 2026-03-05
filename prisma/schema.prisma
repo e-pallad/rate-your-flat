@@ -41,6 +41,8 @@ model Flat {
   verified         Boolean   @default(false)
   verificationCode String?
   verifiedAt       DateTime?
+  latitude         Float?
+  longitude        Float?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 

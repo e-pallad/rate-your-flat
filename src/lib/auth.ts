@@ -50,8 +50,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // Initial sign-in: populate token from the authorized user object
         token.id = user.id;
         token.role = user.role;
+      } else if (token.id) {
+        // Subsequent requests: re-fetch role from DB so role changes take effect
+        // without requiring the user to log out and back in.
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true },
+          });
+          if (dbUser) {
+            token.role = dbUser.role;
+          }
+        } catch {
+          // DB unavailable — keep existing token role rather than failing hard
+        }
       }
       return token;
     },

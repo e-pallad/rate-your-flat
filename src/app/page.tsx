@@ -32,6 +32,10 @@ const translations: Record<string, Record<string, string>> = {
     "pagination.next": "Next",
     "pagination.page": "Page",
     "pagination.of": "of",
+    "filter.city": "City",
+    "filter.allCities": "All cities",
+    "filter.minRating": "Min. rating",
+    "filter.any": "Any",
   },
   de: {
     "nav.flats": "Wohnungen",
@@ -56,6 +60,10 @@ const translations: Record<string, Record<string, string>> = {
     "pagination.next": "Weiter",
     "pagination.page": "Seite",
     "pagination.of": "von",
+    "filter.city": "Stadt",
+    "filter.allCities": "Alle Städte",
+    "filter.minRating": "Mindestbewertung",
+    "filter.any": "Beliebig",
   },
 };
 
@@ -66,68 +74,185 @@ function getTranslation(key: string): string {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+    city?: string;
+    minRating?: string;
+  }>;
 }) {
   const params = await searchParams;
   const query = (params.q || "").trim().slice(0, 100);
+  const cityFilter = (params.city || "").trim().slice(0, 100);
+  const minRating = Math.min(
+    5,
+    Math.max(0, parseFloat(params.minRating || "0") || 0),
+  );
   const rawPage = Math.max(1, parseInt(params.page || "1", 10) || 1);
 
-  const where = query
-    ? {
-        OR: [
-          { address: { contains: query } },
-          { city: { contains: query } },
-          { postalCode: { contains: query } },
-        ],
-      }
-    : {};
+  // Fetch distinct cities for the filter dropdown
+  const cityRows = await prisma.flat.findMany({
+    select: { city: true },
+    distinct: ["city"],
+    orderBy: { city: "asc" },
+  });
+  const cities = cityRows.map((r) => r.city);
 
-  const totalCount = await prisma.flat.count({ where });
+  // Build parameterised WHERE fragments for text search and city filter.
+  // We use $queryRaw so Postgres can compute AVG(overall) in the same query
+  // and apply the HAVING clause, keeping both pagination and min-rating correct
+  // without loading the full table into Node memory.
+  const conditions: string[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sqlParams: any[] = [];
+  let paramIdx = 1;
+
+  if (query) {
+    conditions.push(
+      `(f.address ILIKE $${paramIdx} OR f.city ILIKE $${paramIdx} OR f."postalCode" ILIKE $${paramIdx})`,
+    );
+    sqlParams.push(`%${query}%`);
+    paramIdx++;
+  }
+  if (cityFilter) {
+    conditions.push(`f.city ILIKE $${paramIdx}`);
+    sqlParams.push(cityFilter);
+    paramIdx++;
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // HAVING clause for min-rating (only when requested).
+  // safe_jsonb_float() is a DB helper (see prisma/functions.sql) that wraps
+  // the ::jsonb cast in a PL/pgSQL exception handler so a single malformed
+  // ratings string returns NULL instead of throwing and 500-ing the page.
+  const havingClause =
+    minRating > 0
+      ? `HAVING COALESCE(AVG(safe_jsonb_float(r.ratings, 'overall')), 0) >= $${paramIdx}`
+      : "";
+  if (minRating > 0) {
+    sqlParams.push(minRating);
+    paramIdx++;
+  }
+
+  // Count query — tells us totalPages before fetching rows
+  const countSql = `
+    SELECT COUNT(*) AS total
+    FROM "Flat" f
+    LEFT JOIN "Review" r ON r."flatId" = f.id
+    ${whereClause}
+    GROUP BY f.id
+    ${havingClause}
+  `;
+  // $queryRaw returns an array; wrap in another SELECT to get a scalar count
+  const countResult = await prisma.$queryRawUnsafe<{ total: bigint }[]>(
+    `SELECT COUNT(*) AS total FROM (${countSql}) sub`,
+    ...sqlParams,
+  );
+  const totalCount = Number(countResult[0]?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const page = Math.min(rawPage, totalPages);
 
-  const flats = await prisma.flat.findMany({
-    where,
-    include: {
-      reviews: { select: { ratings: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: PAGE_SIZE,
-    skip: (page - 1) * PAGE_SIZE,
-  });
+  // Paginated data query
+  const offsetVal = (page - 1) * PAGE_SIZE;
+  const dataParams = [...sqlParams, PAGE_SIZE, offsetVal];
+  type FlatRow = {
+    id: string;
+    slug: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    landlordId: string | null;
+    verified: boolean;
+    avgRating: number;
+    reviewCount: bigint;
+  };
+  const pageFlats = await prisma.$queryRawUnsafe<FlatRow[]>(
+    `
+    SELECT
+      f.id,
+      f.slug,
+      f.address,
+      f.city,
+      f."postalCode",
+      f."landlordId",
+      f.verified,
+      COALESCE(AVG(safe_jsonb_float(r.ratings, 'overall')), 0) AS "avgRating",
+      COUNT(r.id) AS "reviewCount"
+    FROM "Flat" f
+    LEFT JOIN "Review" r ON r."flatId" = f.id
+    ${whereClause}
+    GROUP BY f.id
+    ${havingClause}
+    ORDER BY f."createdAt" DESC
+    LIMIT $${paramIdx} OFFSET $${paramIdx + 1}
+    `,
+    ...dataParams,
+  );
 
-  const flatsWithRating = flats.map((flat) => {
-    const ratings = flat.reviews.map((r) => {
-      try {
-        return JSON.parse(r.ratings) as Record<string, number>;
-      } catch {
-        return {} as Record<string, number>;
-      }
-    });
-    const avgRating =
-      ratings.length > 0
-        ? ratings.reduce((acc, r) => acc + (r.overall || 0), 0) / ratings.length
-        : 0;
-    return {
-      ...flat,
-      avgRating: avgRating.toFixed(1),
-      reviewCount: flat.reviews.length,
-    };
-  });
+  // Normalise BigInt reviewCount and pre-format avgRating for the template
+  const flatsForDisplay = pageFlats.map((f) => ({
+    ...f,
+    reviewCount: Number(f.reviewCount),
+    avgRatingDisplay: Number(f.avgRating).toFixed(1),
+  }));
 
   const t = getTranslation;
+
+  // Helper to build URL params preserving current filters
+  function buildUrl(overrides: Record<string, string | undefined>) {
+    const merged: Record<string, string> = {};
+    if (query) merged.q = query;
+    if (cityFilter) merged.city = cityFilter;
+    if (minRating > 0) merged.minRating = String(minRating);
+    merged.page = String(page);
+    Object.entries(overrides).forEach(([k, v]) => {
+      if (v === undefined || v === "") delete merged[k];
+      else merged[k] = v;
+    });
+    return `?${new URLSearchParams(merged).toString()}`;
+  }
 
   return (
     <div className="container py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">{t("nav.flats")}</h1>
-        <form className="flex gap-2 max-w-md">
+        <form className="flex flex-wrap gap-2 max-w-2xl">
           <Input
             name="q"
             placeholder={t("common.search")}
             defaultValue={query}
-            className="flex-1"
+            className="flex-1 min-w-48"
           />
+          {/* City filter */}
+          <select
+            name="city"
+            defaultValue={cityFilter}
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="">{t("filter.allCities")}</option>
+            {cities.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          {/* Min-rating filter */}
+          <select
+            name="minRating"
+            defaultValue={minRating > 0 ? String(minRating) : ""}
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <option value="">
+              {t("filter.minRating")}: {t("filter.any")}
+            </option>
+            {[1, 2, 3, 4].map((n) => (
+              <option key={n} value={n}>
+                ≥ {n} ★
+              </option>
+            ))}
+          </select>
           <Button type="submit">
             <Search className="h-4 w-4 mr-2" />
             {t("common.search")}
@@ -135,13 +260,13 @@ export default async function HomePage({
         </form>
       </div>
 
-      {flatsWithRating.length === 0 ? (
+      {flatsForDisplay.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           {t("common.noResults")}
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {flatsWithRating.map((flat) => (
+          {flatsForDisplay.map((flat) => (
             <Link key={flat.id} href={`/flat/${flat.slug}`}>
               <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
                 <CardHeader>
@@ -172,7 +297,7 @@ export default async function HomePage({
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-2xl font-bold">
-                        {flat.avgRating}
+                        {flat.avgRatingDisplay}
                       </span>
                       <span className="text-sm text-muted-foreground">
                         {" "}
@@ -194,7 +319,7 @@ export default async function HomePage({
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-4 mt-8">
           <Link
-            href={`?${new URLSearchParams({ ...(query ? { q: query } : {}), page: String(page - 1) }).toString()}`}
+            href={buildUrl({ page: String(page - 1) })}
             aria-disabled={page <= 1}
             tabIndex={page <= 1 ? -1 : undefined}
           >
@@ -207,7 +332,7 @@ export default async function HomePage({
             {t("pagination.page")} {page} {t("pagination.of")} {totalPages}
           </span>
           <Link
-            href={`?${new URLSearchParams({ ...(query ? { q: query } : {}), page: String(page + 1) }).toString()}`}
+            href={buildUrl({ page: String(page + 1) })}
             aria-disabled={page >= totalPages}
             tabIndex={page >= totalPages ? -1 : undefined}
           >

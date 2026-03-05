@@ -24,6 +24,15 @@ DATABASE_URL="postgresql://flatrate:flatrate_password@localhost:5432/rateyourfla
 
 # Reset database (drops all data)
 DATABASE_URL="postgresql://flatrate:flatrate_password@localhost:5432/rateyourflat" ./node_modules/.bin/prisma db push --force-reset
+
+# Apply DB helper functions (run once after db push, or after --force-reset)
+# These are plain SQL functions not expressible in schema.prisma
+DATABASE_URL="postgresql://flatrate:flatrate_password@localhost:5432/rateyourflat" node -e "
+const {PrismaClient}=require('./node_modules/@prisma/client');
+const fs=require('fs');
+const p=new PrismaClient();
+p.\$executeRawUnsafe(fs.readFileSync('prisma/functions.sql','utf8')).then(()=>p.\$disconnect());
+"
 ```
 
 ### Code Quality

@@ -72,6 +72,7 @@ export default function ModeratorDashboard() {
     try {
       const res = await fetch(`/api/moderator/flats/${slug}`, {
         method: "DELETE",
+        headers: { "x-requested-with": "XMLHttpRequest" },
       });
       if (!res.ok) {
         const data = await res.json();
@@ -89,6 +90,7 @@ export default function ModeratorDashboard() {
     try {
       const res = await fetch(`/api/moderator/reviews/${id}`, {
         method: "DELETE",
+        headers: { "x-requested-with": "XMLHttpRequest" },
       });
       if (!res.ok) {
         const data = await res.json();

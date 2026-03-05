@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { parseRatings, averageOverall } from "@/lib/ratings";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { LandlordResponseForm } from "@/components/landlord-response-form";
+import { FlatMapClient } from "@/components/flat-map-client";
 
 const REVIEWS_PER_PAGE = 10;
 
@@ -27,6 +30,7 @@ const translations: Record<string, Record<string, string>> = {
     "pagination.next": "Next",
     "pagination.page": "Page",
     "pagination.of": "of",
+    "flat.map": "Location",
   },
   de: {
     "flat.verified": "Verifiziert",
@@ -44,6 +48,7 @@ const translations: Record<string, Record<string, string>> = {
     "pagination.next": "Weiter",
     "pagination.page": "Seite",
     "pagination.of": "von",
+    "flat.map": "Lage",
   },
 };
 
@@ -107,6 +112,9 @@ export default async function FlatPage({
   });
   const ratings = allRatingsRaw.map((r) => parseRatings(r.ratings));
   const avgRating = averageOverall(ratings);
+
+  const isLandlordOfFlat =
+    session?.user?.role === "LANDLORD" && flat.landlordId === session.user.id;
 
   return (
     <div className="container py-8">
@@ -177,6 +185,27 @@ export default async function FlatPage({
                       </CardHeader>
                       <CardContent>
                         <p className="mb-2">{review.comment}</p>
+                        {review.images && review.images.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {review.images.map((img) => (
+                              <a
+                                key={img.id}
+                                href={img.path}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block"
+                              >
+                                <Image
+                                  src={img.path}
+                                  alt={img.filename}
+                                  width={120}
+                                  height={90}
+                                  className="rounded-md object-cover border border-border hover:opacity-80 transition-opacity"
+                                />
+                              </a>
+                            ))}
+                          </div>
+                        )}
                         {review.landlordResponse && (
                           <div className="mt-4 p-3 bg-muted rounded-md">
                             <p className="text-sm font-medium">
@@ -184,6 +213,9 @@ export default async function FlatPage({
                             </p>
                             <p className="text-sm">{review.landlordResponse}</p>
                           </div>
+                        )}
+                        {isLandlordOfFlat && !review.landlordResponse && (
+                          <LandlordResponseForm reviewId={review.id} />
                         )}
                       </CardContent>
                     </Card>
@@ -253,6 +285,21 @@ export default async function FlatPage({
               )}
             </CardContent>
           </Card>
+
+          {flat.latitude != null && flat.longitude != null && (
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>{t("flat.map")}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 overflow-hidden rounded-b-lg">
+                <FlatMapClient
+                  latitude={flat.latitude}
+                  longitude={flat.longitude}
+                  label={`${flat.address}, ${flat.city}`}
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

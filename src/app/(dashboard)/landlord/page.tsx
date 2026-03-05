@@ -20,6 +20,8 @@ const translations: Record<string, Record<string, string>> = {
     "flat.verify": "Verify",
     "flat.reviews": "Reviews",
     "flat.viewFlat": "View",
+    "flat.yourCode": "Verification code:",
+    "analytics.viewAnalytics": "View Analytics",
   },
   de: {
     "dashboard.landlordDashboard": "Vermieter-Übersicht",
@@ -34,6 +36,8 @@ const translations: Record<string, Record<string, string>> = {
     "flat.verify": "Verifizieren",
     "flat.reviews": "Bewertungen",
     "flat.viewFlat": "Ansehen",
+    "flat.yourCode": "Verifizierungscode:",
+    "analytics.viewAnalytics": "Analysen ansehen",
   },
 };
 
@@ -73,9 +77,14 @@ export default async function LandlordDashboard() {
         <h1 className="text-3xl font-bold">
           {t("dashboard.landlordDashboard")}
         </h1>
-        <Link href="/flat/new">
-          <Button>{t("flat.addFlat")}</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/landlord/analytics">
+            <Button variant="outline">{t("analytics.viewAnalytics")}</Button>
+          </Link>
+          <Link href="/flat/new">
+            <Button>{t("flat.addFlat")}</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3 mb-8">
@@ -136,9 +145,19 @@ export default async function LandlordDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  {flat.reviews.length} {t("flat.reviews")}
-                </span>
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">
+                    {flat.reviews.length} {t("flat.reviews")}
+                  </span>
+                  {!flat.verified && flat.verificationCode && (
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {t("flat.yourCode")}{" "}
+                      <span className="font-semibold select-all">
+                        {flat.verificationCode}
+                      </span>
+                    </p>
+                  )}
+                </div>
                 <div className="flex gap-2">
                   {!flat.verified && (
                     <Link href={`/flat/${flat.slug}/verify`}>
