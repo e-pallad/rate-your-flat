@@ -4,12 +4,12 @@
 A platform enabling users to rate and review flats they've rented, helping future renters make informed decisions.
 
 ## Tech Stack
-- **Frontend:** Next.js 14 (App Router) + TypeScript
+- **Frontend:** Next.js 16 (App Router) + TypeScript
 - **Styling:** shadcn/ui + Tailwind CSS
 - **Backend:** Next.js API Routes
-- **Database:** SQLite (dev) / PostgreSQL (prod) + Prisma ORM
+- **Database:** PostgreSQL + Prisma ORM
 - **Auth:** NextAuth.js v5 (credentials-based)
-- **i18n:** i18next (German, English)
+- **i18n:** Custom hand-rolled context in `src/lib/i18n.tsx` (German default, English)
 
 ## Core Features
 
@@ -97,25 +97,22 @@ npm run lint
 npm run typecheck
 
 # Generate Prisma client
-npx prisma generate
+./node_modules/.bin/prisma generate
 
 # Push schema to database
-npx prisma db push
+./node_modules/.bin/prisma db push
 
 # Reset database
-npx prisma db push --force-reset
+./node_modules/.bin/prisma db push --force-reset
 ```
 
 ## Environment Variables
 
 ```env
-DATABASE_URL="file:./dev.db"  # SQLite (dev)
-# DATABASE_URL="postgresql://..."  # PostgreSQL (prod)
+DATABASE_URL="postgresql://flatrate:flatrate_password@localhost:5432/rateyourflat"
 
-NEXTAUTH_SECRET="your-secret"
+NEXTAUTH_SECRET="your-secret-min-32-chars"
 NEXTAUTH_URL="http://localhost:3000"
-
-RESEND_API_KEY="re_..."
 ```
 
 ## Docker Setup

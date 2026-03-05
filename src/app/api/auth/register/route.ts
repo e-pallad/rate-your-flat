@@ -65,9 +65,14 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      // Return an ambiguous success to prevent email enumeration.
+      // The client cannot distinguish this from a real registration.
       return NextResponse.json(
-        { message: "Email already in use" },
-        { status: 400 },
+        {
+          message:
+            "If this email is not already registered, your account has been created.",
+        },
+        { status: 201 },
       );
     }
 
@@ -83,7 +88,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
+      {
+        message:
+          "If this email is not already registered, your account has been created.",
+      },
       { status: 201 },
     );
   } catch (error) {

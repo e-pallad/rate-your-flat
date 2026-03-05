@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, ChevronLeft } from "lucide-react";
+
+const PAGE_SIZE = 12;
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -26,6 +28,10 @@ const translations: Record<string, Record<string, string>> = {
     "faq.addFlat.q": "Can I add a flat as a renter?",
     "faq.addFlat.a":
       'Yes - any logged-in user can add a flat. Renter-submitted flats appear immediately as "Unclaimed".',
+    "pagination.previous": "Previous",
+    "pagination.next": "Next",
+    "pagination.page": "Page",
+    "pagination.of": "of",
   },
   de: {
     "nav.flats": "Wohnungen",
@@ -46,6 +52,10 @@ const translations: Record<string, Record<string, string>> = {
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzuf\u00fcgen?",
     "faq.addFlat.a":
       'Ja - jeder angemeldete Nutzer kann eine Wohnung hinzuf\u00fcgen. Von Mietern eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
+    "pagination.previous": "Zurück",
+    "pagination.next": "Weiter",
+    "pagination.page": "Seite",
+    "pagination.of": "von",
   },
 };
 
@@ -56,25 +66,34 @@ function getTranslation(key: string): string {
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const params = await searchParams;
   const query = (params.q || "").trim().slice(0, 100);
+  const rawPage = Math.max(1, parseInt(params.page || "1", 10) || 1);
+
+  const where = query
+    ? {
+        OR: [
+          { address: { contains: query } },
+          { city: { contains: query } },
+          { postalCode: { contains: query } },
+        ],
+      }
+    : {};
+
+  const totalCount = await prisma.flat.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const page = Math.min(rawPage, totalPages);
 
   const flats = await prisma.flat.findMany({
-    where: query
-      ? {
-          OR: [
-            { address: { contains: query } },
-            { city: { contains: query } },
-            { postalCode: { contains: query } },
-          ],
-        }
-      : {},
+    where,
     include: {
       reviews: { select: { ratings: true } },
     },
     orderBy: { createdAt: "desc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
   });
 
   const flatsWithRating = flats.map((flat) => {
@@ -168,6 +187,35 @@ export default async function HomePage({
               </Card>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* Pagination controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <Link
+            href={`?${new URLSearchParams({ ...(query ? { q: query } : {}), page: String(page - 1) }).toString()}`}
+            aria-disabled={page <= 1}
+            tabIndex={page <= 1 ? -1 : undefined}
+          >
+            <Button variant="outline" size="sm" disabled={page <= 1}>
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              {t("pagination.previous")}
+            </Button>
+          </Link>
+          <span className="text-sm text-muted-foreground">
+            {t("pagination.page")} {page} {t("pagination.of")} {totalPages}
+          </span>
+          <Link
+            href={`?${new URLSearchParams({ ...(query ? { q: query } : {}), page: String(page + 1) }).toString()}`}
+            aria-disabled={page >= totalPages}
+            tabIndex={page >= totalPages ? -1 : undefined}
+          >
+            <Button variant="outline" size="sm" disabled={page >= totalPages}>
+              {t("pagination.next")}
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
         </div>
       )}
 

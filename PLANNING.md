@@ -8,15 +8,15 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ## Current Goals (This Sprint/Iteration)
 
-- [ ] Dark mode - auto-detect system preference (no manual toggle needed)
-- [ ] Add error/loading boundaries - `error.tsx` and `loading.tsx` for better UX
-- [ ] Pagination for flat listings and reviews
+- [x] Dark mode - auto-detect system preference (no manual toggle needed)
+- [x] Add error/loading boundaries - `error.tsx` and `loading.tsx` for better UX
+- [x] Pagination for flat listings and reviews
 
 ---
 
 ## In Progress
 
-- [ ] PR #4: Update README with completed items and fix tech stack notes (`docs/update-readme`)
+_(nothing currently in progress)_
 
 ---
 
@@ -47,13 +47,12 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ### Technical Improvements
 
-- [ ] **Rate limiting** - Registration, login, and review submission have no rate limiting
-- [ ] **Auth security** - Fix email enumeration vulnerability (register returns 409 revealing existing email)
+- [ ] **Rate limiting** - Login and review submission have no rate limiting (registration already has it)
+- [ ] ~~**Auth security**~~ - Email enumeration fixed: register now returns 201 with ambiguous message for duplicate emails
 - [ ] **Password validation** - Add minimum length/complexity requirements on registration
 - [ ] **CSRF protection** - Custom API routes do not validate CSRF tokens
 - [ ] **Verification code generation** - Generate code at flat creation time for the claim flow
 - [ ] **JWT role staleness** - Role in JWT not updated when admin changes a user's role
-- [ ] **Add error/loading boundaries** - Create `error.tsx` and `loading.tsx` for better UX
 - [ ] **Standardize translations** - Server components use local inline dict; consider consolidating
 
 ### Bug Fixes
@@ -81,6 +80,10 @@ A platform for tenants to rate and review rental flats, helping others make info
 - [x] Unit test suite (Vitest) — 24 tests across slug, ratings, i18n ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
 - [x] Prettier formatting enforcement across all source files ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
 - [x] Extracted `generateSlug`, `parseRatings`, `averageOverall` to `src/lib/` ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
+- [x] Dark mode — `next-themes` ThemeProvider wired with `defaultTheme=system`
+- [x] Error/loading boundaries — `error.tsx` and `loading.tsx` for root, flat detail, and auth routes
+- [x] Pagination — flat listings (12/page) and reviews (10/page)
+- [x] README/SPEC/PLANNING docs updated — stale tech stack, SQLite references, completed items ([PR #4 equivalent](https://github.com/e-pallad/rate-your-flat/tree/docs/update-readme))
 
 ---
 
@@ -88,21 +91,9 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ### Open Issues
 
-1. **Dark Mode Incomplete** - CSS variables exist but no provider implemented
-   - Fix: Add `next-themes` provider with `useSystem={true}`
+4. **No Password Validation** - Registration accepts any password beyond 8-char minimum
 
-2. **No Error/Loading Boundaries** - Missing `error.tsx` and `loading.tsx` files
-
-3. **Auth Email Enumeration** - Register endpoint returns 409 revealing whether email is taken
-   - Fix: Return a generic message regardless
-
-4. **No Password Validation** - Registration accepts any password
-
-5. **No Pagination** - Flat listings and reviews grow unbounded
-
-6. **No Loading States** - Missing skeletons for async data
-
-7. **Rate Limiting** - No rate limiting on registration, login, or review submission
+7. **Rate Limiting** - No rate limiting on login or review submission (registration already has it)
 
 8. **CSRF Protection** - Custom API routes do not validate CSRF tokens
 
@@ -112,6 +103,10 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ### Resolved
 
+- ~~**Dark Mode**~~ - `next-themes` ThemeProvider wired with `defaultTheme=system, enableSystem`; `.dark` CSS variables already existed
+- ~~**No Error/Loading Boundaries**~~ - `error.tsx` and `loading.tsx` added at root, flat detail, and auth route levels
+- ~~**No Pagination**~~ - Flat listings (12/page) and reviews (10/page) with prev/next controls
+- ~~**Auth Email Enumeration**~~ - Register endpoint returns `201` with ambiguous message for duplicate emails
 - ~~**Inline Translations**~~ - Server components intentionally use a local inline dict + `getTranslation()` helper; `translations` is now exported from `src/lib/i18n.tsx` for use in tests and client components. Pattern is consistent and documented in `AGENTS.md`.
 - ~~**Anonymous Reviewer Privacy**~~ - Moderator and admin APIs now redact reviewer identity for anonymous reviews ([PR #1](https://github.com/e-pallad/rate-your-flat/pull/1))
 - ~~**JWT Revocation**~~ - Middleware performs a DB check on every authenticated request ([PR #1](https://github.com/e-pallad/rate-your-flat/pull/1))
@@ -120,7 +115,5 @@ A platform for tenants to rate and review rental flats, helping others make info
 
 ## Notes
 
-- Dark mode should auto-detect system preference (prefers-color-scheme)
-- Use existing TranslationProvider for i18n strings
 - Follow existing shadcn/ui patterns for new components
-- `next-themes` package already installed but not configured
+- `next-themes` is configured — ThemeProvider wraps the entire app in `providers.tsx`
