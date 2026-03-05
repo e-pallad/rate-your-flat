@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { parseRatings, averageOverall } from "@/lib/ratings";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const REVIEWS_PER_PAGE = 10;
 
 const translations: Record<string, Record<string, string>> = {
   en: {
@@ -20,6 +23,10 @@ const translations: Record<string, Record<string, string>> = {
     "flat.averageRating": "Average Rating",
     "flat.writeReview": "Write a Review",
     "review.alreadyReviewed": "You have already reviewed this flat",
+    "pagination.previous": "Previous",
+    "pagination.next": "Next",
+    "pagination.page": "Page",
+    "pagination.of": "of",
   },
   de: {
     "flat.verified": "Verifiziert",
@@ -33,6 +40,10 @@ const translations: Record<string, Record<string, string>> = {
     "flat.averageRating": "Durchschnittsbewertung",
     "flat.writeReview": "Bewertung schreiben",
     "review.alreadyReviewed": "Du hast diese Wohnung bereits bewertet",
+    "pagination.previous": "Zurück",
+    "pagination.next": "Weiter",
+    "pagination.page": "Seite",
+    "pagination.of": "von",
   },
 };
 
@@ -42,24 +53,21 @@ function getTranslation(key: string): string {
 
 export default async function FlatPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const session = await auth();
   const { slug } = await params;
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam || "1", 10) || 1);
   const t = getTranslation;
 
   const flat = await prisma.flat.findUnique({
     where: { slug },
     include: {
       landlord: { select: { name: true } },
-      reviews: {
-        include: {
-          images: true,
-          user: { select: { name: true } },
-        },
-        orderBy: { createdAt: "desc" },
-      },
     },
   });
 
@@ -67,12 +75,35 @@ export default async function FlatPage({
     notFound();
   }
 
-  const ratings = flat.reviews.map((r) => parseRatings(r.ratings));
-  const avgRating = averageOverall(ratings);
+  const [reviews, totalReviews, userReview] = await Promise.all([
+    prisma.review.findMany({
+      where: { flatId: flat.id },
+      include: {
+        images: true,
+        user: { select: { name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: REVIEWS_PER_PAGE,
+      skip: (page - 1) * REVIEWS_PER_PAGE,
+    }),
+    prisma.review.count({ where: { flatId: flat.id } }),
+    session
+      ? prisma.review.findFirst({
+          where: { flatId: flat.id, userId: session.user.id },
+          select: { id: true },
+        })
+      : Promise.resolve(null),
+  ]);
 
-  const userReview = session
-    ? flat.reviews.find((r) => r.userId === session.user.id)
-    : null;
+  const totalPages = Math.max(1, Math.ceil(totalReviews / REVIEWS_PER_PAGE));
+
+  // Compute average from ALL reviews (not just current page)
+  const allRatingsRaw = await prisma.review.findMany({
+    where: { flatId: flat.id },
+    select: { ratings: true },
+  });
+  const ratings = allRatingsRaw.map((r) => parseRatings(r.ratings));
+  const avgRating = averageOverall(ratings);
 
   return (
     <div className="container py-8">
@@ -114,13 +145,13 @@ export default async function FlatPage({
 
           <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4">
-              {t("flat.reviews")} ({flat.reviews.length})
+              {t("flat.reviews")} ({totalReviews})
             </h2>
-            {flat.reviews.length === 0 ? (
+            {reviews.length === 0 ? (
               <p className="text-muted-foreground">{t("flat.noReviews")}</p>
             ) : (
               <div className="space-y-4">
-                {flat.reviews.map((review) => {
+                {reviews.map((review) => {
                   const parsedRatings = parseRatings(review.ratings);
                   return (
                     <Card key={review.id}>
@@ -157,6 +188,40 @@ export default async function FlatPage({
                 })}
               </div>
             )}
+
+            {/* Pagination controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <Link
+                  href={`?${new URLSearchParams({ page: String(page - 1) }).toString()}`}
+                  aria-disabled={page <= 1}
+                  tabIndex={page <= 1 ? -1 : undefined}
+                >
+                  <Button variant="outline" size="sm" disabled={page <= 1}>
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    {t("pagination.previous")}
+                  </Button>
+                </Link>
+                <span className="text-sm text-muted-foreground">
+                  {t("pagination.page")} {page} {t("pagination.of")}{" "}
+                  {totalPages}
+                </span>
+                <Link
+                  href={`?${new URLSearchParams({ page: String(page + 1) }).toString()}`}
+                  aria-disabled={page >= totalPages}
+                  tabIndex={page >= totalPages ? -1 : undefined}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                  >
+                    {t("pagination.next")}
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
@@ -171,7 +236,7 @@ export default async function FlatPage({
                 <span className="text-xl text-muted-foreground"> / 5</span>
               </div>
               <div className="text-sm text-muted-foreground text-center mb-4">
-                {flat.reviews.length} {t("flat.reviews")}
+                {totalReviews} {t("flat.reviews")}
               </div>
               {session?.user?.role === "RENTER" && !userReview && (
                 <Link href={`/flat/${slug}/review`}>
