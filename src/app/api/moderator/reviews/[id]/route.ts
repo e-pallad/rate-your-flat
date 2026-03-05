@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { checkCsrf } from "@/lib/rate-limit";
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    if (!checkCsrf(req)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
     const session = await auth();
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

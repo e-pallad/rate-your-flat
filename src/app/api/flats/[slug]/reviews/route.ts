@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/db";
+import {
+  checkRateLimit,
+  getClientIdentifier,
+  checkCsrf,
+} from "@/lib/rate-limit";
 
 interface RatingsInput {
   overall: number;
@@ -22,6 +27,22 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   try {
+    if (!checkCsrf(req)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
+
+    // Rate limit: 10 review submissions per minute per IP
+    const rateResult = checkRateLimit(`review:${getClientIdentifier(req)}`, {
+      windowMs: 60_000,
+      maxRequests: 10,
+    });
+    if (!rateResult.allowed) {
+      return NextResponse.json(
+        { message: "Too many requests. Please try again later." },
+        { status: 429 },
+      );
+    }
+
     const session = await auth();
 
     if (!session) {

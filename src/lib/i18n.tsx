@@ -69,6 +69,14 @@ export const translations: Record<string, Record<string, string>> = {
     "flat.writeReview": "Write a Review",
     "flat.viewFlat": "View Flat",
     "flat.landlord": "Landlord",
+    "flat.flatCreated": "Flat Added Successfully",
+    "flat.flatCreatedSubtitle":
+      "Your flat has been listed. Save the verification code below — you will need it to claim and verify this flat.",
+    "flat.verificationCodeLabel": "Your Verification Code",
+    "flat.verificationCodeHint":
+      "Share this code with the landlord so they can claim the flat, or use it yourself via the Verify button on the flat page.",
+    "flat.yourCode": "Verification code:",
+    "flat.verifySuccess": "Flat verified successfully",
     // review
     "review.title": "Review",
     "review.ratings": "Ratings",
@@ -81,8 +89,15 @@ export const translations: Record<string, Record<string, string>> = {
     "review.anonymous": "Post anonymously",
     "review.respond": "Respond",
     "review.response": "Landlord Response",
+    "review.responsePlaceholder": "Write your response to this review...",
+    "review.responseSubmitted": "Response submitted successfully",
+    "review.reviewSubmitted": "Review submitted successfully",
+    "review.submitReviewSubtitle": "Rate your flat experience",
+    "review.commentPlaceholder": "Share your experience with this flat...",
     "review.images": "Images",
     "review.addImages": "Add Images",
+    "review.imagesHint":
+      "JPEG, PNG, WebP or GIF — max 5 MB each, up to 5 images",
     "review.overallRating": "Overall Rating",
     "review.submitReview": "Submit Review",
     "review.updateReview": "Update Review",
@@ -98,6 +113,17 @@ export const translations: Record<string, Record<string, string>> = {
     "dashboard.recentReviews": "Recent Reviews",
     "dashboard.myReviews": "My Reviews",
     "dashboard.mySubmittedFlats": "Flats I Added",
+    // analytics
+    "analytics.title": "Analytics",
+    "analytics.back": "Back to Dashboard",
+    "analytics.selectFlat": "Select flat",
+    "analytics.noFlats": "You have no flats yet.",
+    "analytics.ratingTrend": "Rating Trend Over Time",
+    "analytics.dimensionBreakdown": "Dimension Breakdown",
+    "analytics.avgRating": "Avg Rating",
+    "analytics.basedOn": "Based on",
+    "analytics.reviewsCount": "reviews",
+    "analytics.viewAnalytics": "View Analytics",
     // footer
     "footer.tagline": "Find your perfect flat with real reviews from renters.",
     "footer.about": "About",
@@ -226,6 +252,14 @@ export const translations: Record<string, Record<string, string>> = {
     "flat.writeReview": "Bewertung schreiben",
     "flat.viewFlat": "Wohnung ansehen",
     "flat.landlord": "Vermieter",
+    "flat.flatCreated": "Wohnung erfolgreich eingetragen",
+    "flat.flatCreatedSubtitle":
+      "Deine Wohnung wurde eingetragen. Speichere den Verifizierungscode unten — du brauchst ihn, um die Wohnung zu beanspruchen und zu verifizieren.",
+    "flat.verificationCodeLabel": "Dein Verifizierungscode",
+    "flat.verificationCodeHint":
+      "Teile diesen Code mit dem Vermieter, damit er die Wohnung beanspruchen kann, oder nutze ihn selbst über den Verifizieren-Button auf der Wohnungsseite.",
+    "flat.yourCode": "Verifizierungscode:",
+    "flat.verifySuccess": "Wohnung erfolgreich verifiziert",
     // review
     "review.title": "Bewertung",
     "review.ratings": "Bewertungen",
@@ -238,8 +272,16 @@ export const translations: Record<string, Record<string, string>> = {
     "review.anonymous": "Anonym veröffentlichen",
     "review.respond": "Antworten",
     "review.response": "Vermieter-Antwort",
+    "review.responsePlaceholder":
+      "Schreibe deine Antwort auf diese Bewertung...",
+    "review.responseSubmitted": "Antwort erfolgreich übermittelt",
+    "review.reviewSubmitted": "Bewertung erfolgreich eingereicht",
+    "review.submitReviewSubtitle": "Bewerte deine Wohnerfahrung",
+    "review.commentPlaceholder": "Teile deine Erfahrung mit dieser Wohnung...",
     "review.images": "Bilder",
     "review.addImages": "Bilder hinzufügen",
+    "review.imagesHint":
+      "JPEG, PNG, WebP oder GIF — max. 5 MB pro Bild, bis zu 5 Bilder",
     "review.overallRating": "Gesamtbewertung",
     "review.submitReview": "Bewertung absenden",
     "review.updateReview": "Bewertung aktualisieren",
@@ -255,6 +297,17 @@ export const translations: Record<string, Record<string, string>> = {
     "dashboard.recentReviews": "Neueste Bewertungen",
     "dashboard.myReviews": "Meine Bewertungen",
     "dashboard.mySubmittedFlats": "Von mir hinzugefügte Wohnungen",
+    // analytics
+    "analytics.title": "Analysen",
+    "analytics.back": "Zurück zur Übersicht",
+    "analytics.selectFlat": "Wohnung auswählen",
+    "analytics.noFlats": "Du hast noch keine Wohnungen.",
+    "analytics.ratingTrend": "Bewertungsverlauf",
+    "analytics.dimensionBreakdown": "Dimensionen im Überblick",
+    "analytics.avgRating": "Ø Bewertung",
+    "analytics.basedOn": "Basierend auf",
+    "analytics.reviewsCount": "Bewertungen",
+    "analytics.viewAnalytics": "Analysen ansehen",
     // footer
     "footer.tagline":
       "Finde deine perfekte Wohnung mit echten Bewertungen von Mietern.",

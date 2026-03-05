@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
 import { use } from "react";
 import {
@@ -35,7 +36,10 @@ export default function VerifyFlatPage({
     try {
       const res = await fetch(`/api/flats/${slug}/verify`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-requested-with": "XMLHttpRequest",
+        },
         body: JSON.stringify({ code }),
       });
 
@@ -44,9 +48,12 @@ export default function VerifyFlatPage({
         throw new Error(body.message || t("common.error"));
       }
 
+      toast.success(t("flat.verifySuccess"));
       router.push(`/flat/${slug}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      const msg = err instanceof Error ? err.message : t("common.error");
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
