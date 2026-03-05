@@ -17,7 +17,7 @@ A Next.js web application for tenants to rate and review rental flats. Users can
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth.js (beta)
 - **Styling**: Tailwind CSS + shadcn/ui
-- **Internationalization**: i18next + react-i18next
+- **Internationalization**: Custom i18n context (German/English)
 - **Validation**: Zod
 
 ## Getting Started
@@ -25,35 +25,40 @@ A Next.js web application for tenants to rate and review rental flats. Users can
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database (or SQLite for development)
-- Docker (optional, for PostgreSQL)
+- PostgreSQL database (via Docker or a hosted instance)
+- Docker (recommended — `docker compose up db -d` starts the DB)
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/e-pallad/rate-your-flat.git
 cd rate-your-flat
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your database URL and auth secrets
 ```
 
 4. Generate Prisma client and push schema:
+
 ```bash
-npx prisma generate
-npx prisma db push
+./node_modules/.bin/prisma generate
+./node_modules/.bin/prisma db push
 ```
 
 5. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -84,10 +89,15 @@ src/
 
 ## Future Steps
 
+- [x] Admin dashboard for content moderation ([PR #1](https://github.com/e-pallad/rate-your-flat/pull/1))
+- [x] CI/CD pipeline with GitHub Actions (lint, typecheck, build, test) ([PR #2](https://github.com/e-pallad/rate-your-flat/pull/2))
+- [x] Unit test suite (Vitest) and Prettier formatting enforcement ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
+- [x] Dark mode (system auto-detect via next-themes)
+- [x] Error and loading boundaries (`error.tsx` / `loading.tsx`)
+- [x] Pagination for flat listings and reviews
 - [ ] Advanced search and filter functionality (by price, location, amenities)
 - [ ] Map integration to display flat locations
 - [ ] Favorite/bookmark flats for later
-- [ ] Admin dashboard for content moderation
 - [ ] Image uploads for flats
 - [ ] Social features (sharing reviews)
 - [ ] Email notifications for new reviews
