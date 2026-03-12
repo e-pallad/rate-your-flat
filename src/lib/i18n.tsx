@@ -161,17 +161,17 @@ export const translations: Record<string, Record<string, string>> = {
       "Use the search bar on the homepage to search by address, city, or postal code. Results update as you type. All flats are shown - verified, unverified, and unclaimed.",
     "faq.review.q": "How do I submit a review?",
     "faq.review.a":
-      'Open any flat\'s detail page and click "Write a Review". You need a free account to submit. You can rate 6 dimensions (overall, location, price, condition, noise, landlord) on a scale of 1-5, leave a written comment, and optionally post anonymously.',
+      'Open any flat\'s detail page and click "Write a Review". No account needed — you can submit as a guest with just your name. If you have an account, log in to keep track of all your reviews. You can rate 6 dimensions (overall, location, price, condition, noise, landlord) on a scale of 1-5, leave a written comment, and optionally post anonymously.',
     "faq.addFlat.q": "Can I add a flat as a renter?",
     "faq.addFlat.a":
-      'Yes - any logged-in user (landlord or renter) can add a flat via the "Add Flat" button. Flats added by renters appear immediately on the homepage as "Unclaimed" until a landlord registers and verifies them.',
+      'Yes - anyone can add a flat, including guests without an account. Logged-in users can use the "Add Flat" button; guests can use the dedicated guest submission form at /flat/new/guest. Flats added by renters or guests appear immediately on the homepage as "Unclaimed" until a landlord registers and verifies them.',
     "faq.claim.q": "How do landlords claim or verify a flat?",
     "faq.claim.a":
       'Landlords can visit a flat\'s detail page and click "Verify". A verification code (provided by the renter who submitted the flat) is required to complete the claim. Once claimed, the flat displays a Verified badge and the landlord can respond to reviews.',
     "faq.privacy.q":
       "Is my data private? Are anonymous reviews truly anonymous?",
     "faq.privacy.a":
-      'You must have an account to submit a review, but checking "Post anonymously" hides your name from all public views - other users and landlords cannot see who wrote the review. Only platform administrators have access to the account behind an anonymous review, and only when investigating reported abuse.',
+      'Logged-in users who check "Post anonymously" have their name hidden from all public views — other users and landlords cannot see who wrote the review. Guest reviews are submitted with a display name you choose and are not linked to any account. Only platform administrators can investigate the account or IP address behind a review when responding to reported abuse.',
     "faq.trust.q": "How do you prevent fake or biased reviews?",
     "faq.trust.a":
       "We use several layers of protection to keep reviews trustworthy.",
@@ -364,17 +364,17 @@ export const translations: Record<string, Record<string, string>> = {
       "Nutze die Suchleiste auf der Startseite, um nach Adresse, Stadt oder Postleitzahl zu suchen. Die Ergebnisse aktualisieren sich waehrend der Eingabe. Es werden alle Wohnungen angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
     "faq.review.q": "Wie schreibe ich eine Bewertung?",
     "faq.review.a":
-      'Oeffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Du benoeligst ein kostenloses Konto. Du kannst 6 Kategorien (Gesamt, Lage, Preis, Zustand, Laerm, Vermieter) auf einer Skala von 1-5 bewerten, einen Kommentar hinterlassen und optional anonym posten.',
+      'Öffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Kein Konto erforderlich — du kannst als Gast mit nur deinem Namen eine Bewertung abgeben. Mit einem Konto kannst du alle deine Bewertungen im Überblick behalten. Du kannst 6 Kategorien (Gesamt, Lage, Preis, Zustand, Lärm, Vermieter) auf einer Skala von 1–5 bewerten, einen Kommentar hinterlassen und optional anonym posten.',
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzufuegen?",
     "faq.addFlat.a":
-      'Ja - jeder angemeldete Nutzer (Vermieter oder Mieter) kann ueber den Button "Wohnung hinzufuegen" eine Wohnung eintragen. Von Mietern eingetragene Wohnungen erscheinen sofort auf der Startseite als "Nicht beansprucht", bis ein Vermieter sie verifiziert.',
+      'Ja — jeder kann eine Wohnung eintragen, auch Gäste ohne Konto. Angemeldete Nutzer verwenden den Button "Wohnung hinzufügen"; Gäste nutzen das Gast-Formular unter /flat/new/guest. Von Mietern oder Gästen eingetragene Wohnungen erscheinen sofort auf der Startseite als "Nicht beansprucht", bis ein Vermieter sie verifiziert.',
     "faq.claim.q": "Wie beanspruchen oder verifizieren Vermieter eine Wohnung?",
     "faq.claim.a":
       'Vermieter koennen die Detailseite einer Wohnung aufrufen und auf "Verifizieren" klicken. Ein Verifizierungscode (vom Mieter bereitgestellt, der die Wohnung eingetragen hat) ist erforderlich. Nach der Beanspruchung zeigt die Wohnung ein Verifiziert-Badge und der Vermieter kann auf Bewertungen antworten.',
     "faq.privacy.q":
       "Sind meine Daten sicher? Sind anonyme Bewertungen wirklich anonym?",
     "faq.privacy.a":
-      'Du benoeligst ein Konto, um eine Bewertung abzugeben, aber wenn du "Anonym veroeffentlichen" aktivierst, wird dein Name in allen oeffentlichen Ansichten ausgeblendet - andere Nutzer und Vermieter koennen nicht sehen, wer die Bewertung geschrieben hat. Nur Plattformadministratoren haben Zugang zum Konto hinter einer anonymen Bewertung, und nur bei der Untersuchung gemeldeter Missbrauchsfaelle.',
+      'Angemeldete Nutzer, die "Anonym veröffentlichen" aktivieren, haben ihren Namen in allen öffentlichen Ansichten ausgeblendet — andere Nutzer und Vermieter können nicht sehen, wer die Bewertung geschrieben hat. Gastbewertungen werden mit einem selbst gewählten Anzeigenamen eingereicht und sind nicht mit einem Konto verknüpft. Nur Plattformadministratoren können bei gemeldeten Missbrauchsfällen das Konto oder die IP-Adresse hinter einer Bewertung einsehen.',
     "faq.trust.q":
       "Wie werden gefaelschte oder voreingenommene Bewertungen verhindert?",
     "faq.trust.a":
