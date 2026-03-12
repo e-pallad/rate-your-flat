@@ -37,8 +37,7 @@ const translations: Record<string, Record<string, string>> = {
   },
   de: {
     "faq.title": "H\u00e4ufige Fragen",
-    "faq.subtitle":
-      "Antworten auf häufige Fragen zu FlatCheck",
+    "faq.subtitle": "Antworten auf häufige Fragen zu FlatCheck",
     "faq.search.q": "Wie finde ich eine Wohnung?",
     "faq.search.a":
       "Nutze die Suchleiste auf der Startseite, um nach Adresse, Stadt oder Postleitzahl zu suchen. Die Ergebnisse aktualisieren sich w\u00e4hrend der Eingabe. Es werden alle Wohnungen angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
