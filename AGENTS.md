@@ -2,6 +2,16 @@
 
 This file provides guidelines for AI agents working on this codebase.
 
+## Runtime Environment
+
+This project is developed on **WSL2** (Windows Subsystem for Linux), but **Docker Desktop runs on the Windows host**. The Docker socket is shared into WSL via Docker Desktop's WSL integration, so `docker` and `docker compose` commands work from within WSL — but agents should be aware of the following:
+
+- **`docker compose` commands work from WSL** via the socket Docker Desktop exposes at `/var/run/docker.sock`. If commands fail with a socket error, ensure Docker Desktop is running on the host and WSL integration is enabled in Docker Desktop settings.
+- **The agent cannot directly start containers for the user** — `docker compose up` / `down` / `build` must be run by the user in a terminal, or by the agent via Bash (only works if Docker Desktop is already running on the host).
+- **Port mappings are on the Windows host**, not WSL. `localhost:3000` means the Windows browser — not a WSL process.
+- **The app container image is not live-reloading** — after source changes, rebuild and restart: `docker compose build app && docker compose up -d app`.
+- **For local development**, only the database container is needed: `docker compose up db -d`, then `npm run dev` from WSL for a live-reloading dev server.
+
 ## Build / Lint / Test Commands
 
 ### Development
@@ -145,7 +155,9 @@ export async function POST(req: Request) {
 - Always include relations explicitly with `include`
 - Use transactions for multi-step operations
 - Handle null values with optional chaining
-- **Prisma version**: The project uses Prisma **5.22.0** locally. Always use `./node_modules/.bin/prisma` (never `npx prisma`, which may pick up a globally-installed incompatible version)
+- **Prisma version**: The project uses Prisma **7.x** locally. Always use `./node_modules/.bin/prisma` (never `npx prisma`, which may pick up a globally-installed incompatible version)
+- **Prisma 7 config**: datasource URL is now configured in `prisma.config.ts` (project root), not in `schema.prisma`. The config uses `env("DATABASE_URL")` — always set this env var before running any Prisma CLI command
+- **Prisma 7 Docker**: `--skip-generate` flag was removed. Use plain `prisma db push`. The Prisma CLI (`prisma/build/index.js`) requires its full transitive dep tree (`@prisma/dev` → `valibot`, `hono`, etc.) — the runner stage must copy the full `node_modules/` directory (not just selective Prisma packages)
 - `Role` is stored as a plain `String` field with valid values `"LANDLORD"` | `"RENTER"` | `"MODERATOR"` | `"ADMIN"`. Application code must enforce this.
 
 ```typescript
@@ -264,7 +276,7 @@ The following security improvements are noted but not yet implemented:
 - ~~**Email enumeration**~~: Fixed — the register endpoint now returns `201` with an ambiguous message (`"If this email is not already registered, your account has been created."`) for duplicate emails, so callers cannot enumerate registered addresses.
 - **CSRF protection**: NextAuth handles its own CSRF tokens, but custom API routes (`/api/flats`, `/api/flats/[slug]/reviews`) do not validate CSRF tokens. Use `SameSite=Strict` cookies or add a custom header check.
 - **Verification code generation**: `POST /api/flats` currently stores `verificationCode: null`. For the claim flow, generate a random code (e.g. `crypto.randomUUID()`) at creation time and display it to the submitter so a landlord can claim the flat later.
-- **JWT role staleness after role change**: When an admin changes a user's role via `PATCH /api/admin/users/[id]`, the user's existing JWT still carries the old role until they log out and back in (up to 30 days). The middleware in `src/middleware.ts` checks user existence but does not re-read the role on each request. Fix options: (a) re-fetch the role from the DB in the `jwt` callback on every token refresh, or (b) switch to `strategy: "database"` sessions so the role is always read live from the DB.
+- **JWT role staleness after role change**: When an admin changes a user's role via `PATCH /api/admin/users/[id]`, the user's existing JWT still carries the old role until they log out and back in (up to 30 days). The proxy in `src/proxy.ts` checks user existence but does not re-read the role on each request. Fix options: (a) re-fetch the role from the DB in the `jwt` callback on every token refresh, or (b) switch to `strategy: "database"` sessions so the role is always read live from the DB.
 
 ## Database / Production Notes
 
