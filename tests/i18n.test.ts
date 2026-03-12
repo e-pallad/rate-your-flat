@@ -9,7 +9,7 @@ function t(key: string, language: string): string {
 
 describe("translations — German (de)", () => {
   it("returns the correct German string for a known key", () => {
-    expect(t("common.appName", "de")).toBe("Bewerte deine Wohnung");
+    expect(t("common.appName", "de")).toBe("FlatCheck");
   });
 
   it("returns the correct German string for a review key", () => {

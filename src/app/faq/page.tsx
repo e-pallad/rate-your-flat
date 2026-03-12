@@ -16,7 +16,7 @@ import {
 const translations: Record<string, Record<string, string>> = {
   en: {
     "faq.title": "FAQ",
-    "faq.subtitle": "Answers to common questions about Rate Your Flat",
+    "faq.subtitle": "Answers to common questions about FlatCheck",
     "faq.search.q": "How do I find a flat?",
     "faq.search.a":
       "Use the search bar on the homepage to search by address, city, or postal code. Results update as you type. All flats are shown - verified, unverified, and unclaimed.",
@@ -37,8 +37,7 @@ const translations: Record<string, Record<string, string>> = {
   },
   de: {
     "faq.title": "H\u00e4ufige Fragen",
-    "faq.subtitle":
-      "Antworten auf h\u00e4ufige Fragen zu Bewerte deine Wohnung",
+    "faq.subtitle": "Antworten auf häufige Fragen zu FlatCheck",
     "faq.search.q": "Wie finde ich eine Wohnung?",
     "faq.search.a":
       "Nutze die Suchleiste auf der Startseite, um nach Adresse, Stadt oder Postleitzahl zu suchen. Die Ergebnisse aktualisieren sich w\u00e4hrend der Eingabe. Es werden alle Wohnungen angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",

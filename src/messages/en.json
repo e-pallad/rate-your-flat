@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Rate Your Flat",
+    "appName": "FlatCheck",
     "loading": "Loading...",
     "error": "An error occurred",
     "save": "Save",

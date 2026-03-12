@@ -3,12 +3,12 @@ import Link from "next/link";
 const t: Record<string, Record<string, string>> = {
   en: {
     title: "Privacy Policy",
-    body: "We collect only the data necessary to operate the platform (name, email, and reviews you submit). Your data is never sold to third parties. Anonymous reviews hide your identity from all public views. For full details or a data deletion request, contact us at privacy@rateyourflat.example.",
+    body: "We collect only the data necessary to operate the platform (name, email, and reviews you submit). Your data is never sold to third parties. Anonymous reviews hide your identity from all public views. For full details or a data deletion request, contact us at privacy@flatcheck.example.",
     back: "Back to home",
   },
   de: {
     title: "Datenschutz",
-    body: "Wir erheben nur die Daten, die zum Betrieb der Plattform erforderlich sind (Name, E-Mail und von Ihnen eingereichte Bewertungen). Ihre Daten werden niemals an Dritte verkauft. Anonyme Bewertungen verbergen Ihre Identität in allen öffentlichen Ansichten. Für vollständige Informationen oder eine Datenanfrage wenden Sie sich an privacy@rateyourflat.example.",
+    body: "Wir erheben nur die Daten, die zum Betrieb der Plattform erforderlich sind (Name, E-Mail und von Ihnen eingereichte Bewertungen). Ihre Daten werden niemals an Dritte verkauft. Anonyme Bewertungen verbergen Ihre Identität in allen öffentlichen Ansichten. Für vollständige Informationen oder eine Datenanfrage wenden Sie sich an privacy@flatcheck.example.",
     back: "Zurück zur Startseite",
   },
 };

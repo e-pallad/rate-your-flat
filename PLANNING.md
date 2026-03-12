@@ -1,4 +1,4 @@
-# Project Planning - Rate Your Flat
+# Project Planning - FlatCheck
 
 ## Project Overview
 

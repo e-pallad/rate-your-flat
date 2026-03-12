@@ -33,7 +33,7 @@ module.exports = {
       },
       infile: "CHANGELOG.md",
       header:
-        "# Changelog\n\nAll notable changes to Rate Your Flat are documented here.\n",
+        "# Changelog\n\nAll notable changes to FlatCheck are documented here.\n",
     },
   },
 };

@@ -1,4 +1,4 @@
-# Rate Your Flat
+# FlatCheck
 
 A Next.js web application for tenants to rate and review rental flats. Users can browse flats, leave reviews, and help others make informed decisions about their housing choices.
 
@@ -46,8 +46,8 @@ A Next.js web application for tenants to rate and review rental flats. Users can
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/e-pallad/rate-your-flat.git
-cd rate-your-flat
+git clone https://github.com/e-pallad/flatcheck.git
+cd flatcheck
 ```
 
 2. Install dependencies:
@@ -169,24 +169,24 @@ Semgrep static analysis runs in parallel on every PR using the `p/typescript`, `
 
 ## Completed Features
 
-- [x] Admin and Moderator dashboards with role-based access control ([PR #1](https://github.com/e-pallad/rate-your-flat/pull/1))
-- [x] CI/CD pipeline with GitHub Actions (lint, typecheck, build, test) ([PR #2](https://github.com/e-pallad/rate-your-flat/pull/2))
-- [x] Unit test suite (Vitest) and Prettier formatting enforcement ([PR #3](https://github.com/e-pallad/rate-your-flat/pull/3))
-- [x] Missing flat management pages and API routes ([PR #12](https://github.com/e-pallad/rate-your-flat/pull/12), [PR #13](https://github.com/e-pallad/rate-your-flat/pull/13))
-- [x] Rate limiting on auth and review endpoints ([PR #14](https://github.com/e-pallad/rate-your-flat/pull/14))
-- [x] Stub pages for all footer links ([PR #15](https://github.com/e-pallad/rate-your-flat/pull/15))
-- [x] Dark mode (system auto-detect via next-themes) ([PR #16](https://github.com/e-pallad/rate-your-flat/pull/16))
-- [x] Error and loading boundaries (`error.tsx` / `loading.tsx`) ([PR #16](https://github.com/e-pallad/rate-your-flat/pull/16))
-- [x] DB-side pagination for flat listings and reviews ([PR #16](https://github.com/e-pallad/rate-your-flat/pull/16))
-- [x] Email enumeration fix on registration endpoint ([PR #16](https://github.com/e-pallad/rate-your-flat/pull/16))
-- [x] Image uploads for reviews (up to 5 images, atomic quota via DB transaction) ([PR #17](https://github.com/e-pallad/rate-your-flat/pull/17))
-- [x] Leaflet map integration on flat detail pages ([PR #17](https://github.com/e-pallad/rate-your-flat/pull/17))
-- [x] Landlord analytics dashboard with Recharts ([PR #17](https://github.com/e-pallad/rate-your-flat/pull/17))
-- [x] JWT role refresh and security hardening ([PR #17](https://github.com/e-pallad/rate-your-flat/pull/17))
-- [x] Dependabot configuration for weekly npm updates ([PR #18](https://github.com/e-pallad/rate-your-flat/pull/18))
-- [x] Semgrep static analysis CI workflow ([PR #26](https://github.com/e-pallad/rate-your-flat/pull/26))
-- [x] Prisma 5→7 migration, React 19.2.4, pg 8.20, and other dependency updates ([PR #31](https://github.com/e-pallad/rate-your-flat/pull/31))
-- [x] Automated GitHub releases with release-it and conventional changelog ([PR #32](https://github.com/e-pallad/rate-your-flat/pull/32))
+- [x] Admin and Moderator dashboards with role-based access control ([PR #1](https://github.com/e-pallad/flatcheck/pull/1))
+- [x] CI/CD pipeline with GitHub Actions (lint, typecheck, build, test) ([PR #2](https://github.com/e-pallad/flatcheck/pull/2))
+- [x] Unit test suite (Vitest) and Prettier formatting enforcement ([PR #3](https://github.com/e-pallad/flatcheck/pull/3))
+- [x] Missing flat management pages and API routes ([PR #12](https://github.com/e-pallad/flatcheck/pull/12), [PR #13](https://github.com/e-pallad/flatcheck/pull/13))
+- [x] Rate limiting on auth and review endpoints ([PR #14](https://github.com/e-pallad/flatcheck/pull/14))
+- [x] Stub pages for all footer links ([PR #15](https://github.com/e-pallad/flatcheck/pull/15))
+- [x] Dark mode (system auto-detect via next-themes) ([PR #16](https://github.com/e-pallad/flatcheck/pull/16))
+- [x] Error and loading boundaries (`error.tsx` / `loading.tsx`) ([PR #16](https://github.com/e-pallad/flatcheck/pull/16))
+- [x] DB-side pagination for flat listings and reviews ([PR #16](https://github.com/e-pallad/flatcheck/pull/16))
+- [x] Email enumeration fix on registration endpoint ([PR #16](https://github.com/e-pallad/flatcheck/pull/16))
+- [x] Image uploads for reviews (up to 5 images, atomic quota via DB transaction) ([PR #17](https://github.com/e-pallad/flatcheck/pull/17))
+- [x] Leaflet map integration on flat detail pages ([PR #17](https://github.com/e-pallad/flatcheck/pull/17))
+- [x] Landlord analytics dashboard with Recharts ([PR #17](https://github.com/e-pallad/flatcheck/pull/17))
+- [x] JWT role refresh and security hardening ([PR #17](https://github.com/e-pallad/flatcheck/pull/17))
+- [x] Dependabot configuration for weekly npm updates ([PR #18](https://github.com/e-pallad/flatcheck/pull/18))
+- [x] Semgrep static analysis CI workflow ([PR #26](https://github.com/e-pallad/flatcheck/pull/26))
+- [x] Prisma 5→7 migration, React 19.2.4, pg 8.20, and other dependency updates ([PR #31](https://github.com/e-pallad/flatcheck/pull/31))
+- [x] Automated GitHub releases with release-it and conventional changelog ([PR #32](https://github.com/e-pallad/flatcheck/pull/32))
 
 ## Planned Features
 
