@@ -24,7 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, User, LogOut, LayoutDashboard, Home } from "lucide-react";
+import { Menu, User, LogOut, LayoutDashboard, Home, Star } from "lucide-react";
 
 export function Header() {
   const { t } = useTranslation();
@@ -34,8 +34,13 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold">{t("common.appName")}</span>
+          <Link href="/" className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Star className="h-4 w-4 fill-current" />
+            </span>
+            <span className="text-xl font-bold tracking-tight">
+              {t("common.appName")}
+            </span>
           </Link>
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
@@ -92,7 +97,7 @@ export function Header() {
                 <Button variant="ghost">{t("nav.login")}</Button>
               </Link>
               <Link href="/register">
-                <Button>{t("nav.register")}</Button>
+                <Button className="font-semibold">{t("nav.register")}</Button>
               </Link>
             </>
           )}
