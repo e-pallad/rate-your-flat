@@ -25,10 +25,10 @@ const translations: Record<string, Record<string, string>> = {
       "Use the search bar above to search by address, city, or postal code. All flats are shown - verified, unverified, and unclaimed.",
     "faq.review.q": "How do I submit a review?",
     "faq.review.a":
-      'Open any flat\'s detail page and click "Write a Review". You need a free account to submit.',
+      'Open any flat\'s detail page and click "Write a Review". No account needed — guests can submit with just a name.',
     "faq.addFlat.q": "Can I add a flat as a renter?",
     "faq.addFlat.a":
-      'Yes - any logged-in user can add a flat. Renter-submitted flats appear immediately as "Unclaimed".',
+      'Yes — anyone can add a flat, including guests without an account. Renter-submitted flats appear immediately as "Unclaimed".',
     "home.guestCta": "No account? Submit a flat & review",
     "home.guestCtaDesc":
       "Found a flat worth rating? You can submit it and write a review without creating an account.",
@@ -57,10 +57,10 @@ const translations: Record<string, Record<string, string>> = {
       "Nutze die Suchleiste oben, um nach Adresse, Stadt oder Postleitzahl zu suchen. Alle Wohnungen werden angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
     "faq.review.q": "Wie schreibe ich eine Bewertung?",
     "faq.review.a":
-      'Oeffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Du benoeligst ein kostenloses Konto.',
+      'Öffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Kein Konto erforderlich — Gäste können mit nur einem Namen eine Bewertung abgeben.',
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzuf\u00fcgen?",
     "faq.addFlat.a":
-      'Ja - jeder angemeldete Nutzer kann eine Wohnung hinzuf\u00fcgen. Von Mietern eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
+      'Ja — jeder kann eine Wohnung eintragen, auch Gäste ohne Konto. Von Mietern oder Gästen eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
     "home.guestCta": "Kein Konto? Wohnung & Bewertung einreichen",
     "home.guestCtaDesc":
       "Eine Wohnung gefunden, die eine Bewertung verdient? Du kannst sie ohne Konto einreichen und bewerten.",
