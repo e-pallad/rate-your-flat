@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Bewerte deine Wohnung",
+    "appName": "FlatCheck",
     "loading": "Laden...",
     "error": "Ein Fehler ist aufgetreten",
     "save": "Speichern",

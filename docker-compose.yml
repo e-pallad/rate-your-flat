@@ -1,12 +1,12 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: rate-your-flat-db
+    container_name: flatcheck-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: flatrate
       POSTGRES_PASSWORD: flatrate_password
-      POSTGRES_DB: rateyourflat
+      POSTGRES_DB: flatcheck
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -21,10 +21,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: rate-your-flat-app
+    container_name: flatcheck-app
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://flatrate:flatrate_password@db:5432/rateyourflat
+      DATABASE_URL: postgresql://flatrate:flatrate_password@db:5432/flatcheck
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change-this-in-production}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
     ports:

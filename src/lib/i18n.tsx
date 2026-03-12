@@ -11,7 +11,7 @@ type TranslationContextType = {
 export const translations: Record<string, Record<string, string>> = {
   en: {
     // common
-    "common.appName": "Rate Your Flat",
+    "common.appName": "FlatCheck",
     "common.loading": "Loading...",
     "common.error": "An error occurred",
     "common.save": "Save",
@@ -167,7 +167,7 @@ export const translations: Record<string, Record<string, string>> = {
     "home.ctaLoggedIn": "Add a flat & write a review",
     // faq
     "faq.title": "FAQ",
-    "faq.subtitle": "Answers to common questions about Rate Your Flat",
+    "faq.subtitle": "Answers to common questions about FlatCheck",
     "faq.viewAll": "View all questions",
     "faq.search.q": "How do I find a flat?",
     "faq.search.a":
@@ -225,7 +225,7 @@ export const translations: Record<string, Record<string, string>> = {
   },
   de: {
     // common
-    "common.appName": "Bewerte deine Wohnung",
+    "common.appName": "FlatCheck",
     "common.loading": "Laden...",
     "common.error": "Ein Fehler ist aufgetreten",
     "common.save": "Speichern",
@@ -383,7 +383,7 @@ export const translations: Record<string, Record<string, string>> = {
     "home.ctaLoggedIn": "Wohnung hinzufügen & bewerten",
     // faq
     "faq.title": "Häufige Fragen",
-    "faq.subtitle": "Antworten auf häufige Fragen zu Bewerte deine Wohnung",
+    "faq.subtitle": "Antworten auf häufige Fragen zu FlatCheck",
     "faq.viewAll": "Alle Fragen ansehen",
     "faq.search.q": "Wie finde ich eine Wohnung?",
     "faq.search.a":

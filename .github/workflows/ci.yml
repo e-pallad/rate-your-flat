@@ -17,7 +17,7 @@ jobs:
         env:
           POSTGRES_USER: flatrate
           POSTGRES_PASSWORD: flatrate_password
-          POSTGRES_DB: rateyourflat
+          POSTGRES_DB: flatcheck
         ports:
           - 5432:5432
         options: >-
@@ -27,7 +27,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://flatrate:flatrate_password@localhost:5432/rateyourflat
+      DATABASE_URL: postgresql://flatrate:flatrate_password@localhost:5432/flatcheck
       NEXTAUTH_SECRET: ci-secret-at-least-32-characters-long
       NEXTAUTH_URL: http://localhost:3000
 

@@ -3,12 +3,12 @@ import Link from "next/link";
 const t: Record<string, Record<string, string>> = {
   en: {
     title: "Terms of Service",
-    body: "By using Rate Your Flat you agree to submit only truthful reviews based on your own experience, to not harass other users, and to comply with applicable law. We reserve the right to remove content that violates these terms. Continued use of the platform constitutes acceptance of any updates to these terms.",
+    body: "By using FlatCheck you agree to submit only truthful reviews based on your own experience, to not harass other users, and to comply with applicable law. We reserve the right to remove content that violates these terms. Continued use of the platform constitutes acceptance of any updates to these terms.",
     back: "Back to home",
   },
   de: {
     title: "Nutzungsbedingungen",
-    body: "Durch die Nutzung von Bewerte deine Wohnung erklären Sie sich damit einverstanden, nur wahrheitsgemäße Bewertungen auf Basis eigener Erfahrungen einzureichen, andere Nutzer nicht zu belästigen und geltendes Recht einzuhalten. Wir behalten uns das Recht vor, Inhalte zu entfernen, die gegen diese Bedingungen verstoßen. Die weitere Nutzung der Plattform gilt als Zustimmung zu etwaigen Aktualisierungen dieser Bedingungen.",
+    body: "Durch die Nutzung von FlatCheck erklären Sie sich damit einverstanden, nur wahrheitsgemäße Bewertungen auf Basis eigener Erfahrungen einzureichen, andere Nutzer nicht zu belästigen und geltendes Recht einzuhalten. Wir behalten uns das Recht vor, Inhalte zu entfernen, die gegen diese Bedingungen verstoßen. Die weitere Nutzung der Plattform gilt als Zustimmung zu etwaigen Aktualisierungen dieser Bedingungen.",
     back: "Zurück zur Startseite",
   },
 };

@@ -3,12 +3,12 @@ import Link from "next/link";
 const t: Record<string, Record<string, string>> = {
   en: {
     title: "Contact",
-    body: "Have a question or feedback? Reach out to us at contact@rateyourflat.example. We aim to respond within 2 business days.",
+    body: "Have a question or feedback? Reach out to us at contact@flatcheck.example. We aim to respond within 2 business days.",
     back: "Back to home",
   },
   de: {
     title: "Kontakt",
-    body: "Haben Sie eine Frage oder Feedback? Schreiben Sie uns an contact@rateyourflat.example. Wir antworten in der Regel innerhalb von 2 Werktagen.",
+    body: "Haben Sie eine Frage oder Feedback? Schreiben Sie uns an contact@flatcheck.example. Wir antworten in der Regel innerhalb von 2 Werktagen.",
     back: "Zurück zur Startseite",
   },
 };
