@@ -35,8 +35,9 @@ model Flat {
   postalCode       String
   country          String    @default("Germany")
   description      String?
-  landlordId       String?   // null = no landlord account linked yet
-  submittedById    String?   // the user (renter or landlord) who created this listing
+  landlordId          String?   // null = no landlord account linked yet
+  submittedById       String?   // the user (renter or landlord) who created this listing
+  guestSubmitterName  String?   // optional display name for guest-submitted flats
   verified         Boolean   @default(false)
   verificationCode String?
   verifiedAt       DateTime?

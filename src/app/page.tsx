@@ -1,5 +1,6 @@
 import Link from "next/link";
 import prisma from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,10 @@ const translations: Record<string, Record<string, string>> = {
     "faq.addFlat.q": "Can I add a flat as a renter?",
     "faq.addFlat.a":
       'Yes - any logged-in user can add a flat. Renter-submitted flats appear immediately as "Unclaimed".',
+    "home.guestCta": "No account? Submit a flat & review",
+    "home.guestCtaDesc":
+      "Found a flat worth rating? You can submit it and write a review without creating an account.",
+    "home.guestCtaButton": "Submit flat & review as guest",
     "pagination.previous": "Previous",
     "pagination.next": "Next",
     "pagination.page": "Page",
@@ -56,6 +61,10 @@ const translations: Record<string, Record<string, string>> = {
     "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzuf\u00fcgen?",
     "faq.addFlat.a":
       'Ja - jeder angemeldete Nutzer kann eine Wohnung hinzuf\u00fcgen. Von Mietern eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
+    "home.guestCta": "Kein Konto? Wohnung & Bewertung einreichen",
+    "home.guestCtaDesc":
+      "Eine Wohnung gefunden, die eine Bewertung verdient? Du kannst sie ohne Konto einreichen und bewerten.",
+    "home.guestCtaButton": "Als Gast einreichen",
     "pagination.previous": "Zurück",
     "pagination.next": "Weiter",
     "pagination.page": "Seite",
@@ -200,6 +209,10 @@ export default async function HomePage({
 
   const t = getTranslation;
 
+  // Server-side session check for guest CTA
+  const session = await auth();
+  const isGuest = !session;
+
   // Helper to build URL params preserving current filters
   function buildUrl(overrides: Record<string, string | undefined>) {
     const merged: Record<string, string> = {};
@@ -340,6 +353,19 @@ export default async function HomePage({
               {t("pagination.next")}
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Guest CTA — only shown to unauthenticated visitors */}
+      {isGuest && (
+        <div className="mt-12 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/30 px-6 py-8 text-center">
+          <h2 className="text-xl font-semibold mb-2">{t("home.guestCta")}</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            {t("home.guestCtaDesc")}
+          </p>
+          <Link href="/flat/new/guest">
+            <Button>{t("home.guestCtaButton")}</Button>
           </Link>
         </div>
       )}
