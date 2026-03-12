@@ -83,6 +83,14 @@ export const translations: Record<string, Record<string, string>> = {
       "Search for an address above, or drag the pin on the map to set the location.",
     "flat.locationSelected": "Location selected",
     "flat.noLocationSelected": "No location selected yet",
+    "flat.addFlatAndReview": "Submit a Flat & Review",
+    "flat.addFlatAndReviewSubtitle":
+      "No account needed — fill in the flat details and your experience below.",
+    "flat.guestSubmitterName": "Your name (optional)",
+    "flat.guestSubmitterNamePlaceholder": "e.g. Jane",
+    "flat.flatCreatedWithReview": "Flat & Review Submitted",
+    "flat.flatCreatedWithReviewSubtitle":
+      "Your flat listing and review have been submitted. Save the verification code below — a landlord can use it to claim and verify this flat.",
     // review
     "review.title": "Review",
     "review.ratings": "Ratings",
@@ -276,6 +284,14 @@ export const translations: Record<string, Record<string, string>> = {
       "Suche oben nach einer Adresse oder ziehe die Markierung auf der Karte an die gewünschte Position.",
     "flat.locationSelected": "Standort ausgewählt",
     "flat.noLocationSelected": "Noch kein Standort ausgewählt",
+    "flat.addFlatAndReview": "Wohnung & Bewertung einreichen",
+    "flat.addFlatAndReviewSubtitle":
+      "Kein Konto erforderlich — fülle unten die Wohnungsdetails und deine Erfahrung aus.",
+    "flat.guestSubmitterName": "Dein Name (optional)",
+    "flat.guestSubmitterNamePlaceholder": "z.B. Max",
+    "flat.flatCreatedWithReview": "Wohnung & Bewertung eingereicht",
+    "flat.flatCreatedWithReviewSubtitle":
+      "Deine Wohnung und Bewertung wurden eingereicht. Speichere den Verifizierungscode — ein Vermieter kann ihn nutzen, um die Wohnung zu beanspruchen.",
     // review
     "review.title": "Bewertung",
     "review.ratings": "Bewertungen",

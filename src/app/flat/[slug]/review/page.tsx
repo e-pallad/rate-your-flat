@@ -23,7 +23,7 @@ interface ReviewPageProps {
 export default function ReviewPage({ params }: ReviewPageProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
   const [error, setError] = useState("");
@@ -39,7 +39,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
     landlord: 5,
   });
 
-  const isGuest = !session;
+  const isGuest = status === "unauthenticated";
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

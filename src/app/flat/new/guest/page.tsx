@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { useTranslation } from "@/lib/i18n";
 import {
   Card,
@@ -13,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FlatLocationPickerClient } from "@/components/flat-location-picker-client";
 import type { LocationValue } from "@/components/flat-location-picker";
@@ -42,10 +42,9 @@ interface SuccessState {
   verificationCode: string;
 }
 
-export default function NewFlatPage() {
+export default function GuestAddFlatPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { data: session } = useSession();
 
   // flat state
   const [location, setLocation] = useState<LocationValue | null>(null);
@@ -53,8 +52,6 @@ export default function NewFlatPage() {
   // review state
   const [ratings, setRatings] =
     useState<Record<RatingField, number>>(DEFAULT_RATINGS);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // shared state
   const [loading, setLoading] = useState(false);
@@ -63,19 +60,6 @@ export default function NewFlatPage() {
 
   function handleRatingChange(field: RatingField, value: number) {
     setRatings((prev) => ({ ...prev, [field]: value }));
-  }
-
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles((prev) => {
-      const combined = [...prev, ...files];
-      return combined.slice(0, 5);
-    });
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }
-
-  function removeFile(index: number) {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -93,7 +77,10 @@ export default function NewFlatPage() {
 
     const formData = new FormData(e.currentTarget);
     const description = formData.get("description") as string;
-    const comment = (formData.get("comment") as string) || "";
+    const guestSubmitterName =
+      (formData.get("guestSubmitterName") as string) || undefined;
+    const comment = formData.get("comment") as string;
+    const guestName = (formData.get("guestName") as string) || undefined;
     const isAnonymous = formData.get("isAnonymous") === "on";
 
     try {
@@ -112,6 +99,7 @@ export default function NewFlatPage() {
           description,
           latitude: location.latitude,
           longitude: location.longitude,
+          guestSubmitterName,
         }),
       });
 
@@ -122,39 +110,28 @@ export default function NewFlatPage() {
 
       const { slug, verificationCode } = await flatRes.json();
 
-      // Step 2: Submit review only if a comment was provided
-      if (comment.trim().length >= 10) {
-        const reviewRes = await fetch(`/api/flats/${slug}/reviews`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-requested-with": "XMLHttpRequest",
-          },
-          body: JSON.stringify({ ...ratings, comment, isAnonymous }),
-        });
+      // Step 2: Submit the review (required on the guest combined page)
+      const reviewRes = await fetch(`/api/flats/${slug}/reviews`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-requested-with": "XMLHttpRequest",
+        },
+        body: JSON.stringify({
+          ...ratings,
+          comment,
+          isAnonymous,
+          guestName,
+        }),
+      });
 
-        if (reviewRes.ok) {
-          const { id: reviewId } = await reviewRes.json();
-
-          // Step 3: Upload images best-effort
-          if (selectedFiles.length > 0) {
-            await Promise.allSettled(
-              selectedFiles.map(async (file) => {
-                const fd = new FormData();
-                fd.append("file", file);
-                await fetch(`/api/reviews/${reviewId}/images`, {
-                  method: "POST",
-                  headers: { "x-requested-with": "XMLHttpRequest" },
-                  body: fd,
-                });
-              }),
-            );
-          }
-        }
-        // review failure is non-fatal — the flat was created successfully
+      if (!reviewRes.ok) {
+        const body = await reviewRes.json();
+        throw new Error(body.message || t("common.error"));
       }
 
       setCreated({ slug, verificationCode });
+      toast.success(t("review.reviewSubmitted"));
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("common.error");
       setError(msg);
@@ -164,15 +141,17 @@ export default function NewFlatPage() {
     }
   }
 
-  const isLandlord = session?.user?.role === "LANDLORD";
-
   if (created) {
     return (
       <div className="container py-8 max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">{t("flat.flatCreated")}</CardTitle>
-            <CardDescription>{t("flat.flatCreatedSubtitle")}</CardDescription>
+            <CardTitle className="text-2xl">
+              {t("flat.flatCreatedWithReview")}
+            </CardTitle>
+            <CardDescription>
+              {t("flat.flatCreatedWithReviewSubtitle")}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
@@ -186,19 +165,9 @@ export default function NewFlatPage() {
                 {t("flat.verificationCodeHint")}
               </p>
             </div>
-            <div className="flex gap-3">
-              <Button onClick={() => router.push(`/flat/${created.slug}`)}>
-                {t("flat.viewFlat")}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  router.push(isLandlord ? "/landlord" : "/renter")
-                }
-              >
-                {t("nav.dashboard")}
-              </Button>
-            </div>
+            <Button onClick={() => router.push(`/flat/${created.slug}`)}>
+              {t("flat.viewFlat")}
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -211,8 +180,12 @@ export default function NewFlatPage() {
         {/* ── Section 1: Flat details ── */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">{t("flat.addFlat")}</CardTitle>
-            <CardDescription>{t("flat.unclaimed")}</CardDescription>
+            <CardTitle className="text-2xl">
+              {t("flat.addFlatAndReview")}
+            </CardTitle>
+            <CardDescription>
+              {t("flat.addFlatAndReviewSubtitle")}
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {error && (
@@ -257,10 +230,23 @@ export default function NewFlatPage() {
                 placeholder="Optional description of the flat..."
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="guestSubmitterName">
+                {t("flat.guestSubmitterName")}
+              </Label>
+              <Input
+                id="guestSubmitterName"
+                name="guestSubmitterName"
+                type="text"
+                placeholder={t("flat.guestSubmitterNamePlaceholder")}
+                maxLength={100}
+              />
+            </div>
           </CardContent>
         </Card>
 
-        {/* ── Section 2: Review (optional) ── */}
+        {/* ── Section 2: Review ── */}
         <Card>
           <CardHeader>
             <CardTitle className="text-xl">
@@ -271,6 +257,18 @@ export default function NewFlatPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Optional guest name for the review */}
+            <div className="space-y-2">
+              <Label htmlFor="guestName">{t("review.guestName")}</Label>
+              <Input
+                id="guestName"
+                name="guestName"
+                type="text"
+                placeholder={t("review.guestNamePlaceholder")}
+                maxLength={100}
+              />
+            </div>
+
             {/* Star ratings */}
             <div className="space-y-4">
               <h3 className="font-medium">{t("review.ratings")}</h3>
@@ -303,7 +301,7 @@ export default function NewFlatPage() {
               </div>
             </div>
 
-            {/* Comment (optional — review only submitted if ≥10 chars) */}
+            {/* Comment (required) */}
             <div className="space-y-2">
               <Label htmlFor="comment">{t("review.comment")}</Label>
               <textarea
@@ -311,43 +309,9 @@ export default function NewFlatPage() {
                 name="comment"
                 className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder={t("review.commentPlaceholder")}
+                required
+                minLength={10}
               />
-            </div>
-
-            {/* Image upload */}
-            <div className="space-y-2">
-              <Label>{t("review.addImages")}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t("review.imagesHint")}
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                multiple
-                onChange={handleFileChange}
-                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/80 cursor-pointer"
-              />
-              {selectedFiles.length > 0 && (
-                <ul className="space-y-1 mt-2">
-                  {selectedFiles.map((file, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center justify-between text-sm py-1 px-2 bg-muted rounded"
-                    >
-                      <span className="truncate max-w-xs">{file.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(i)}
-                        className="ml-2 text-muted-foreground hover:text-foreground shrink-0"
-                        aria-label="Remove"
-                      >
-                        ✕
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
 
             {/* Anonymous toggle */}
@@ -372,7 +336,7 @@ export default function NewFlatPage() {
             disabled={loading || !location}
             className="flex-1"
           >
-            {loading ? t("common.loading") : t("flat.addFlat")}
+            {loading ? t("common.loading") : t("flat.addFlatAndReview")}
           </Button>
           <Button
             type="button"

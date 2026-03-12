@@ -3,7 +3,11 @@ import prisma from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { flatSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/slug";
-import { checkCsrf } from "@/lib/rate-limit";
+import {
+  checkCsrf,
+  checkRateLimit,
+  getClientIdentifier,
+} from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   try {
@@ -66,8 +70,20 @@ export async function POST(req: Request) {
     }
 
     const session = await auth();
+
+    // Guest (unauthenticated) submissions: apply IP rate limiting (3 per 10 min)
     if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      const ip = getClientIdentifier(req);
+      const rl = checkRateLimit(`guest-flat:${ip}`, {
+        windowMs: 10 * 60 * 1000,
+        maxRequests: 3,
+      });
+      if (!rl.allowed) {
+        return NextResponse.json(
+          { message: "Too many requests. Please try again later." },
+          { status: 429 },
+        );
+      }
     }
 
     const body = await req.json();
@@ -88,8 +104,9 @@ export async function POST(req: Request) {
       description,
       latitude: clientLat,
       longitude: clientLng,
+      guestSubmitterName,
     } = validation.data;
-    const isLandlord = session.user.role === "LANDLORD";
+    const isLandlord = session?.user.role === "LANDLORD";
     const slug = generateSlug(address.trim(), city.trim());
 
     const verificationCode = crypto.randomUUID();
@@ -131,8 +148,11 @@ export async function POST(req: Request) {
         postalCode: postalCode.trim(),
         country: country ?? "Germany",
         description: description?.trim() || null,
-        landlordId: isLandlord ? session.user.id : null,
-        submittedById: session.user.id,
+        landlordId: isLandlord ? session!.user.id : null,
+        submittedById: session?.user.id ?? null,
+        guestSubmitterName: !session
+          ? guestSubmitterName?.trim() || null
+          : null,
         verified: false,
         verificationCode,
         latitude,

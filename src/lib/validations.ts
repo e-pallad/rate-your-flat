@@ -27,6 +27,8 @@ export const flatSchema = z.object({
   /** Pre-computed coordinates from the client-side map picker (optional) */
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  /** Optional display name for guest (unauthenticated) submitters */
+  guestSubmitterName: z.string().max(100).optional(),
 });
 
 export const reviewSchema = z.object({
