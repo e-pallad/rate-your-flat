@@ -2,9 +2,6 @@ import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-// Prisma uses Node.js APIs — cannot run in the Edge Runtime.
-export const runtime = "nodejs";
-
 export default auth(async (req) => {
   const session = req.auth;
 

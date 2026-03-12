@@ -2,7 +2,7 @@
 set -e
 
 echo "Running prisma db push..."
-./node_modules/.bin/prisma db push --skip-generate
+node ./node_modules/prisma/build/index.js db push
 
 echo "Starting server..."
 exec node server.js
