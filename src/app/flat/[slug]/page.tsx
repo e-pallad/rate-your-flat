@@ -22,6 +22,7 @@ const translations: Record<string, Record<string, string>> = {
     "flat.noReviews": "No reviews yet",
     "flat.landlord": "Landlord",
     "review.anonymous": "Anonymous",
+    "review.guestReview": "Guest review",
     "review.response": "Landlord Response",
     "flat.averageRating": "Average Rating",
     "flat.writeReview": "Write a Review",
@@ -40,6 +41,7 @@ const translations: Record<string, Record<string, string>> = {
     "flat.noReviews": "Noch keine Bewertungen",
     "flat.landlord": "Vermieter",
     "review.anonymous": "Anonym",
+    "review.guestReview": "Gast-Bewertung",
     "review.response": "Vermieter-Antwort",
     "flat.averageRating": "Durchschnittsbewertung",
     "flat.writeReview": "Bewertung schreiben",
@@ -168,13 +170,26 @@ export default async function FlatPage({
                     <Card key={review.id}>
                       <CardHeader>
                         <div className="flex justify-between items-start">
-                          <div>
-                            <span className="font-medium">
-                              {review.isAnonymous
-                                ? t("review.anonymous")
-                                : review.user.name}
-                            </span>
-                            <span className="text-sm text-muted-foreground ml-2">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {review.isAnonymous
+                                  ? t("review.anonymous")
+                                  : (review.user?.name ??
+                                    (review as { guestName?: string | null })
+                                      .guestName ??
+                                    "Guest")}
+                              </span>
+                              {!review.userId && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs text-muted-foreground"
+                                >
+                                  {t("review.guestReview")}
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-sm text-muted-foreground">
                               {new Date(review.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -273,7 +288,7 @@ export default async function FlatPage({
               <div className="text-sm text-muted-foreground text-center mb-4">
                 {totalReviews} {t("flat.reviews")}
               </div>
-              {session?.user?.role === "RENTER" && !userReview && (
+              {!userReview && (
                 <Link href={`/flat/${slug}/review`}>
                   <Button className="w-full">{t("flat.writeReview")}</Button>
                 </Link>

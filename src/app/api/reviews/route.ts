@@ -67,8 +67,8 @@ export async function POST(req: Request) {
 
     const { flatId, ratings, comment, isAnonymous } = validation.data;
 
-    const existingReview = await prisma.review.findUnique({
-      where: { flatId_userId: { flatId, userId: session.user.id } },
+    const existingReview = await prisma.review.findFirst({
+      where: { flatId, userId: session.user.id },
     });
 
     if (existingReview) {

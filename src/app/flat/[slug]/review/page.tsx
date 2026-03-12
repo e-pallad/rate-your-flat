@@ -2,6 +2,7 @@
 
 import { useState, use, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useTranslation } from "@/lib/i18n";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
@@ -21,6 +23,7 @@ interface ReviewPageProps {
 export default function ReviewPage({ params }: ReviewPageProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const { data: session } = useSession();
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
   const [error, setError] = useState("");
@@ -36,6 +39,8 @@ export default function ReviewPage({ params }: ReviewPageProps) {
     landlord: 5,
   });
 
+  const isGuest = !session;
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -44,6 +49,9 @@ export default function ReviewPage({ params }: ReviewPageProps) {
     const formData = new FormData(e.currentTarget);
     const comment = formData.get("comment") as string;
     const isAnonymous = formData.get("isAnonymous") === "on";
+    const guestName = isGuest
+      ? (formData.get("guestName") as string)
+      : undefined;
 
     try {
       // Step 1: Create the review
@@ -53,7 +61,7 @@ export default function ReviewPage({ params }: ReviewPageProps) {
           "Content-Type": "application/json",
           "x-requested-with": "XMLHttpRequest",
         },
-        body: JSON.stringify({ ...ratings, comment, isAnonymous }),
+        body: JSON.stringify({ ...ratings, comment, isAnonymous, guestName }),
       });
 
       if (!res.ok) {
@@ -63,8 +71,8 @@ export default function ReviewPage({ params }: ReviewPageProps) {
 
       const { id: reviewId } = await res.json();
 
-      // Step 2: Upload images (if any), best-effort — don't block on failures
-      if (selectedFiles.length > 0) {
+      // Step 2: Upload images (if any), best-effort — only for authenticated users
+      if (!isGuest && selectedFiles.length > 0) {
         await Promise.allSettled(
           selectedFiles.map(async (file) => {
             const fd = new FormData();
@@ -124,6 +132,20 @@ export default function ReviewPage({ params }: ReviewPageProps) {
               </div>
             )}
 
+            {/* Optional name field for guest reviewers */}
+            {isGuest && (
+              <div className="space-y-2">
+                <Label htmlFor="guestName">{t("review.guestName")}</Label>
+                <Input
+                  id="guestName"
+                  name="guestName"
+                  type="text"
+                  placeholder={t("review.guestNamePlaceholder")}
+                  maxLength={100}
+                />
+              </div>
+            )}
+
             <div className="space-y-4">
               <h3 className="font-medium">{t("review.ratings")}</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -170,41 +192,43 @@ export default function ReviewPage({ params }: ReviewPageProps) {
               />
             </div>
 
-            {/* Image upload */}
-            <div className="space-y-2">
-              <Label>{t("review.addImages")}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t("review.imagesHint")}
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                multiple
-                onChange={handleFileChange}
-                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/80 cursor-pointer"
-              />
-              {selectedFiles.length > 0 && (
-                <ul className="space-y-1 mt-2">
-                  {selectedFiles.map((file, i) => (
-                    <li
-                      key={i}
-                      className="flex items-center justify-between text-sm py-1 px-2 bg-muted rounded"
-                    >
-                      <span className="truncate max-w-xs">{file.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(i)}
-                        className="ml-2 text-muted-foreground hover:text-foreground shrink-0"
-                        aria-label="Remove"
+            {/* Image upload — only available for authenticated users */}
+            {!isGuest && (
+              <div className="space-y-2">
+                <Label>{t("review.addImages")}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("review.imagesHint")}
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  multiple
+                  onChange={handleFileChange}
+                  className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-secondary-foreground hover:file:bg-secondary/80 cursor-pointer"
+                />
+                {selectedFiles.length > 0 && (
+                  <ul className="space-y-1 mt-2">
+                    {selectedFiles.map((file, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center justify-between text-sm py-1 px-2 bg-muted rounded"
                       >
-                        ✕
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                        <span className="truncate max-w-xs">{file.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          className="ml-2 text-muted-foreground hover:text-foreground shrink-0"
+                          aria-label="Remove"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
 
             <div className="flex items-center gap-2">
               <input
