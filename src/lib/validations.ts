@@ -24,6 +24,9 @@ export const flatSchema = z.object({
   postalCode: z.string().min(1, "Postal code is required"),
   country: z.string().default("Germany"),
   description: z.string().optional(),
+  /** Pre-computed coordinates from the client-side map picker (optional) */
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 export const reviewSchema = z.object({

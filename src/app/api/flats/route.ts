@@ -80,37 +80,47 @@ export async function POST(req: Request) {
       );
     }
 
-    const { address, city, postalCode, country, description } = validation.data;
+    const {
+      address,
+      city,
+      postalCode,
+      country,
+      description,
+      latitude: clientLat,
+      longitude: clientLng,
+    } = validation.data;
     const isLandlord = session.user.role === "LANDLORD";
     const slug = generateSlug(address.trim(), city.trim());
 
     const verificationCode = crypto.randomUUID();
 
-    // Attempt geocoding via Nominatim (best-effort; failures are silently ignored)
-    let latitude: number | null = null;
-    let longitude: number | null = null;
-    try {
-      const query = encodeURIComponent(
-        `${address.trim()}, ${postalCode.trim()} ${city.trim()}, ${country ?? "Germany"}`,
-      );
-      const geoRes = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
-        {
-          headers: {
-            "User-Agent": "RateYourFlat/1.0 (contact@rateyourflat.de)",
+    // Use client-provided coordinates if available; otherwise geocode via Nominatim
+    let latitude: number | null = clientLat ?? null;
+    let longitude: number | null = clientLng ?? null;
+    if (latitude === null || longitude === null) {
+      try {
+        const query = encodeURIComponent(
+          `${address.trim()}, ${postalCode.trim()} ${city.trim()}, ${country ?? "Germany"}`,
+        );
+        const geoRes = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`,
+          {
+            headers: {
+              "User-Agent": "RateYourFlat/1.0 (contact@rateyourflat.de)",
+            },
+            signal: AbortSignal.timeout(5000),
           },
-          signal: AbortSignal.timeout(5000),
-        },
-      );
-      if (geoRes.ok) {
-        const geoData = await geoRes.json();
-        if (geoData.length > 0) {
-          latitude = parseFloat(geoData[0].lat);
-          longitude = parseFloat(geoData[0].lon);
+        );
+        if (geoRes.ok) {
+          const geoData = await geoRes.json();
+          if (geoData.length > 0) {
+            latitude = parseFloat(geoData[0].lat);
+            longitude = parseFloat(geoData[0].lon);
+          }
         }
+      } catch {
+        // geocoding failure is non-fatal
       }
-    } catch {
-      // geocoding failure is non-fatal
     }
 
     const flat = await prisma.flat.create({
