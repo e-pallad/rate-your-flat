@@ -77,6 +77,12 @@ export const translations: Record<string, Record<string, string>> = {
       "Share this code with the landlord so they can claim the flat, or use it yourself via the Verify button on the flat page.",
     "flat.yourCode": "Verification code:",
     "flat.verifySuccess": "Flat verified successfully",
+    "flat.searchAddress": "Search address",
+    "flat.searchPlaceholder": "e.g. Musterstraße 42, Berlin",
+    "flat.mapPickerHint":
+      "Search for an address above, or drag the pin on the map to set the location.",
+    "flat.locationSelected": "Location selected",
+    "flat.noLocationSelected": "No location selected yet",
     // review
     "review.title": "Review",
     "review.ratings": "Ratings",
@@ -134,6 +140,7 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
     "footer.allRightsReserved": "All rights reserved.",
+    "footer.version": "Version",
     // faq
     "faq.title": "FAQ",
     "faq.subtitle": "Answers to common questions about Rate Your Flat",
@@ -260,6 +267,12 @@ export const translations: Record<string, Record<string, string>> = {
       "Teile diesen Code mit dem Vermieter, damit er die Wohnung beanspruchen kann, oder nutze ihn selbst über den Verifizieren-Button auf der Wohnungsseite.",
     "flat.yourCode": "Verifizierungscode:",
     "flat.verifySuccess": "Wohnung erfolgreich verifiziert",
+    "flat.searchAddress": "Adresse suchen",
+    "flat.searchPlaceholder": "z.B. Musterstraße 42, Berlin",
+    "flat.mapPickerHint":
+      "Suche oben nach einer Adresse oder ziehe die Markierung auf der Karte an die gewünschte Position.",
+    "flat.locationSelected": "Standort ausgewählt",
+    "flat.noLocationSelected": "Noch kein Standort ausgewählt",
     // review
     "review.title": "Bewertung",
     "review.ratings": "Bewertungen",
@@ -319,6 +332,7 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.privacy": "Datenschutz",
     "footer.terms": "Nutzungsbedingungen",
     "footer.allRightsReserved": "Alle Rechte vorbehalten.",
+    "footer.version": "Version",
     // faq
     "faq.title": "Häufige Fragen",
     "faq.subtitle": "Antworten auf häufige Fragen zu Bewerte deine Wohnung",
