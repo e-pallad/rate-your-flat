@@ -57,7 +57,8 @@ model Flat {
 model Review {
   id                  String    @id @default(cuid())
   flatId              String
-  userId              String
+  userId              String?   // null = guest review (no account)
+  guestName           String?   // optional display name for guest reviews
   ratings             String    // JSON-serialized: { overall, location, price, condition, noise, landlord }
   comment             String
   isAnonymous         Boolean   @default(false)
@@ -67,10 +68,9 @@ model Review {
   updatedAt           DateTime  @updatedAt
 
   flat   Flat       @relation(fields: [flatId], references: [id], onDelete: Cascade)
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   images FlatImage[]
 
-  @@unique([flatId, userId])
   @@index([flatId])
   @@index([userId])
 }

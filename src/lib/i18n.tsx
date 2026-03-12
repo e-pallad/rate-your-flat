@@ -109,6 +109,9 @@ export const translations: Record<string, Record<string, string>> = {
     "review.updateReview": "Update Review",
     "review.editReview": "Edit Review",
     "review.alreadyReviewed": "You have already reviewed this flat",
+    "review.guestReview": "Guest review",
+    "review.guestName": "Your name (optional)",
+    "review.guestNamePlaceholder": "e.g. Jane",
     // dashboard
     "dashboard.welcome": "Welcome",
     "dashboard.landlordDashboard": "Landlord Dashboard",
@@ -300,6 +303,9 @@ export const translations: Record<string, Record<string, string>> = {
     "review.updateReview": "Bewertung aktualisieren",
     "review.editReview": "Bewertung bearbeiten",
     "review.alreadyReviewed": "Du hast diese Wohnung bereits bewertet",
+    "review.guestReview": "Gast-Bewertung",
+    "review.guestName": "Dein Name (optional)",
+    "review.guestNamePlaceholder": "z.B. Max",
     // dashboard
     "dashboard.welcome": "Willkommen",
     "dashboard.landlordDashboard": "Vermieter-Übersicht",
