@@ -112,7 +112,7 @@ export default function NewFlatPage() {
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-red-500 bg-red-50 rounded-md">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
                 {error}
               </div>
             )}
