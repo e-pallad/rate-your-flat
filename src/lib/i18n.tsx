@@ -152,6 +152,19 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.terms": "Terms of Service",
     "footer.allRightsReserved": "All rights reserved.",
     "footer.version": "Version",
+    // home
+    "home.heroTitle": "Real reviews from real tenants",
+    "home.heroSubtitle":
+      "Find honest ratings for flats across Germany — written by people who actually lived there.",
+    "home.heroSearchCta": "Browse flats",
+    "home.heroReviewCta": "Share your experience",
+    "home.socialProof": "reviews from real tenants",
+    "home.ctaTitle": "Lived somewhere worth rating?",
+    "home.ctaDesc":
+      "Help the next tenant make a better decision. It takes less than 3 minutes.",
+    "home.ctaButton": "Write a review",
+    "home.ctaButtonGuest": "Submit as guest — no account needed",
+    "home.ctaLoggedIn": "Add a flat & write a review",
     // faq
     "faq.title": "FAQ",
     "faq.subtitle": "Answers to common questions about Rate Your Flat",
@@ -355,6 +368,19 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.terms": "Nutzungsbedingungen",
     "footer.allRightsReserved": "Alle Rechte vorbehalten.",
     "footer.version": "Version",
+    // home
+    "home.heroTitle": "Echte Bewertungen von echten Mietern",
+    "home.heroSubtitle":
+      "Finde ehrliche Bewertungen für Wohnungen in ganz Deutschland — geschrieben von Menschen, die dort wirklich gelebt haben.",
+    "home.heroSearchCta": "Wohnungen entdecken",
+    "home.heroReviewCta": "Erfahrung teilen",
+    "home.socialProof": "Bewertungen von echten Mietern",
+    "home.ctaTitle": "Irgendwo gewohnt, das eine Bewertung verdient?",
+    "home.ctaDesc":
+      "Hilf dem nächsten Mieter, eine bessere Entscheidung zu treffen. Dauert weniger als 3 Minuten.",
+    "home.ctaButton": "Jetzt bewerten",
+    "home.ctaButtonGuest": "Als Gast einreichen — kein Konto nötig",
+    "home.ctaLoggedIn": "Wohnung hinzufügen & bewerten",
     // faq
     "faq.title": "Häufige Fragen",
     "faq.subtitle": "Antworten auf häufige Fragen zu Bewerte deine Wohnung",

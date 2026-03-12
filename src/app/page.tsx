@@ -5,7 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronRight, ChevronLeft } from "lucide-react";
+import { StarRating } from "@/components/ui/star-rating";
+import {
+  Search,
+  ChevronRight,
+  ChevronLeft,
+  PenLine,
+  MapPin,
+  Users,
+} from "lucide-react";
 
 const PAGE_SIZE = 12;
 
@@ -14,25 +22,38 @@ const translations: Record<string, Record<string, string>> = {
     "nav.flats": "Flats",
     "common.search": "Search",
     "common.noResults": "No results found",
+    "common.noResultsHint":
+      "Try adjusting your search or filters, or be the first to add a flat in this area.",
     "flat.reviews": "Reviews",
+    "flat.review": "Review",
     "flat.verified": "Verified",
     "flat.unverified": "Unverified",
     "flat.unclaimed": "No landlord linked",
+    "flat.viewDetails": "View details",
+    "flat.noRatingsYet": "No ratings yet",
     "faq.title": "FAQ",
     "faq.viewAll": "View all questions",
     "faq.search.q": "How do I find a flat?",
     "faq.search.a":
-      "Use the search bar above to search by address, city, or postal code. All flats are shown - verified, unverified, and unclaimed.",
+      "Use the search bar above to search by address, city, or postal code. All flats are shown — verified, unverified, and unclaimed.",
     "faq.review.q": "How do I submit a review?",
     "faq.review.a":
       'Open any flat\'s detail page and click "Write a Review". No account needed — guests can submit with just a name.',
     "faq.addFlat.q": "Can I add a flat as a renter?",
     "faq.addFlat.a":
       'Yes — anyone can add a flat, including guests without an account. Renter-submitted flats appear immediately as "Unclaimed".',
-    "home.guestCta": "No account? Submit a flat & review",
-    "home.guestCtaDesc":
-      "Found a flat worth rating? You can submit it and write a review without creating an account.",
-    "home.guestCtaButton": "Submit flat & review as guest",
+    "home.heroTitle": "Real reviews from real tenants",
+    "home.heroSubtitle":
+      "Find honest ratings for flats across Germany — written by people who actually lived there.",
+    "home.heroSearchCta": "Browse flats",
+    "home.heroReviewCta": "Share your experience",
+    "home.socialProof": "reviews from real tenants",
+    "home.ctaTitle": "Lived somewhere worth rating?",
+    "home.ctaDesc":
+      "Help the next tenant make a better decision. It takes less than 3 minutes.",
+    "home.ctaButton": "Write a review",
+    "home.ctaButtonGuest": "Submit as guest — no account needed",
+    "home.ctaLoggedIn": "Add a flat & write a review",
     "pagination.previous": "Previous",
     "pagination.next": "Next",
     "pagination.page": "Page",
@@ -41,30 +62,44 @@ const translations: Record<string, Record<string, string>> = {
     "filter.allCities": "All cities",
     "filter.minRating": "Min. rating",
     "filter.any": "Any",
+    "filter.searchPlaceholder": "Address, city or postcode…",
   },
   de: {
     "nav.flats": "Wohnungen",
     "common.search": "Suchen",
     "common.noResults": "Keine Ergebnisse gefunden",
+    "common.noResultsHint":
+      "Versuche, deine Suche oder Filter anzupassen, oder trage als Erster eine Wohnung in dieser Gegend ein.",
     "flat.reviews": "Bewertungen",
+    "flat.review": "Bewertung",
     "flat.verified": "Verifiziert",
     "flat.unverified": "Nicht verifiziert",
-    "flat.unclaimed": "Kein Vermieter verkn\u00fcpft",
-    "faq.title": "H\u00e4ufige Fragen",
+    "flat.unclaimed": "Kein Vermieter verknüpft",
+    "flat.viewDetails": "Details ansehen",
+    "flat.noRatingsYet": "Noch keine Bewertungen",
+    "faq.title": "Häufige Fragen",
     "faq.viewAll": "Alle Fragen ansehen",
     "faq.search.q": "Wie finde ich eine Wohnung?",
     "faq.search.a":
-      "Nutze die Suchleiste oben, um nach Adresse, Stadt oder Postleitzahl zu suchen. Alle Wohnungen werden angezeigt - verifizierte, nicht verifizierte und nicht beanspruchte.",
+      "Nutze die Suchleiste oben, um nach Adresse, Stadt oder Postleitzahl zu suchen. Alle Wohnungen werden angezeigt — verifizierte, nicht verifizierte und nicht beanspruchte.",
     "faq.review.q": "Wie schreibe ich eine Bewertung?",
     "faq.review.a":
       'Öffne die Detailseite einer Wohnung und klicke auf "Bewertung schreiben". Kein Konto erforderlich — Gäste können mit nur einem Namen eine Bewertung abgeben.',
-    "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzuf\u00fcgen?",
+    "faq.addFlat.q": "Kann ich als Mieter eine Wohnung hinzufügen?",
     "faq.addFlat.a":
       'Ja — jeder kann eine Wohnung eintragen, auch Gäste ohne Konto. Von Mietern oder Gästen eingetragene Wohnungen erscheinen sofort als "Nicht beansprucht".',
-    "home.guestCta": "Kein Konto? Wohnung & Bewertung einreichen",
-    "home.guestCtaDesc":
-      "Eine Wohnung gefunden, die eine Bewertung verdient? Du kannst sie ohne Konto einreichen und bewerten.",
-    "home.guestCtaButton": "Als Gast einreichen",
+    "home.heroTitle": "Echte Bewertungen von echten Mietern",
+    "home.heroSubtitle":
+      "Finde ehrliche Bewertungen für Wohnungen in ganz Deutschland — geschrieben von Menschen, die dort wirklich gelebt haben.",
+    "home.heroSearchCta": "Wohnungen entdecken",
+    "home.heroReviewCta": "Erfahrung teilen",
+    "home.socialProof": "Bewertungen von echten Mietern",
+    "home.ctaTitle": "Irgendwo gewohnt, das eine Bewertung verdient?",
+    "home.ctaDesc":
+      "Hilf dem nächsten Mieter, eine bessere Entscheidung zu treffen. Dauert weniger als 3 Minuten.",
+    "home.ctaButton": "Jetzt bewerten",
+    "home.ctaButtonGuest": "Als Gast einreichen — kein Konto nötig",
+    "home.ctaLoggedIn": "Wohnung hinzufügen & bewerten",
     "pagination.previous": "Zurück",
     "pagination.next": "Weiter",
     "pagination.page": "Seite",
@@ -73,6 +108,7 @@ const translations: Record<string, Record<string, string>> = {
     "filter.allCities": "Alle Städte",
     "filter.minRating": "Mindestbewertung",
     "filter.any": "Beliebig",
+    "filter.searchPlaceholder": "Adresse, Stadt oder Postleitzahl…",
   },
 };
 
@@ -107,10 +143,10 @@ export default async function HomePage({
   });
   const cities = cityRows.map((r) => r.city);
 
+  // Total review count for social proof
+  const totalReviewCount = await prisma.review.count();
+
   // Build parameterised WHERE fragments for text search and city filter.
-  // We use $queryRaw so Postgres can compute AVG(overall) in the same query
-  // and apply the HAVING clause, keeping both pagination and min-rating correct
-  // without loading the full table into Node memory.
   const conditions: string[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sqlParams: any[] = [];
@@ -132,10 +168,6 @@ export default async function HomePage({
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  // HAVING clause for min-rating (only when requested).
-  // safe_jsonb_float() is a DB helper (see prisma/functions.sql) that wraps
-  // the ::jsonb cast in a PL/pgSQL exception handler so a single malformed
-  // ratings string returns NULL instead of throwing and 500-ing the page.
   const havingClause =
     minRating > 0
       ? `HAVING COALESCE(AVG(safe_jsonb_float(r.ratings, 'overall')), 0) >= $${paramIdx}`
@@ -145,7 +177,7 @@ export default async function HomePage({
     paramIdx++;
   }
 
-  // Count query — tells us totalPages before fetching rows
+  // Count query
   const countSql = `
     SELECT COUNT(*) AS total
     FROM "Flat" f
@@ -154,7 +186,6 @@ export default async function HomePage({
     GROUP BY f.id
     ${havingClause}
   `;
-  // $queryRaw returns an array; wrap in another SELECT to get a scalar count
   const countResult = await prisma.$queryRawUnsafe<{ total: bigint }[]>(
     `SELECT COUNT(*) AS total FROM (${countSql}) sub`,
     ...sqlParams,
@@ -200,18 +231,20 @@ export default async function HomePage({
     ...dataParams,
   );
 
-  // Normalise BigInt reviewCount and pre-format avgRating for the template
   const flatsForDisplay = pageFlats.map((f) => ({
     ...f,
     reviewCount: Number(f.reviewCount),
+    avgRating: Number(f.avgRating),
     avgRatingDisplay: Number(f.avgRating).toFixed(1),
   }));
 
   const t = getTranslation;
 
-  // Server-side session check for guest CTA
+  // Server-side session check
   const session = await auth();
   const isGuest = !session;
+
+  const isFiltered = !!(query || cityFilter || minRating > 0);
 
   // Helper to build URL params preserving current filters
   function buildUrl(overrides: Record<string, string | undefined>) {
@@ -228,181 +261,296 @@ export default async function HomePage({
   }
 
   return (
-    <div className="container py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">{t("nav.flats")}</h1>
-        <form className="flex flex-wrap gap-2 max-w-2xl">
-          <Input
-            name="q"
-            placeholder={t("common.search")}
-            defaultValue={query}
-            className="flex-1 min-w-48"
+    <>
+      {/* ── Hero ── */}
+      {!isFiltered && page === 1 && (
+        <section className="relative overflow-hidden border-b bg-gradient-to-br from-[var(--brand-light)] via-background to-background py-16 md:py-24">
+          {/* decorative blobs */}
+          <div
+            className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full opacity-20"
+            style={{
+              background:
+                "radial-gradient(circle, var(--brand) 0%, transparent 70%)",
+            }}
+            aria-hidden="true"
           />
-          {/* City filter */}
-          <select
-            name="city"
-            defaultValue={cityFilter}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <option value="">{t("filter.allCities")}</option>
-            {cities.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          {/* Min-rating filter */}
-          <select
-            name="minRating"
-            defaultValue={minRating > 0 ? String(minRating) : ""}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <option value="">
-              {t("filter.minRating")}: {t("filter.any")}
-            </option>
-            {[1, 2, 3, 4].map((n) => (
-              <option key={n} value={n}>
-                ≥ {n} ★
-              </option>
-            ))}
-          </select>
-          <Button type="submit">
-            <Search className="h-4 w-4 mr-2" />
-            {t("common.search")}
-          </Button>
-        </form>
-      </div>
+          <div
+            className="pointer-events-none absolute -bottom-16 -left-16 h-60 w-60 rounded-full opacity-10"
+            style={{
+              background:
+                "radial-gradient(circle, var(--brand) 0%, transparent 70%)",
+            }}
+            aria-hidden="true"
+          />
 
-      {flatsForDisplay.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          {t("common.noResults")}
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {flatsForDisplay.map((flat) => (
-            <Link key={flat.id} href={`/flat/${flat.slug}`}>
-              <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader>
-                  <div className="flex justify-between items-start gap-2">
-                    <CardTitle className="text-lg">{flat.address}</CardTitle>
-                    {flat.verified ? (
-                      <Badge variant="default" className="shrink-0">
-                        {t("flat.verified")}
-                      </Badge>
-                    ) : flat.landlordId ? (
-                      <Badge variant="secondary" className="shrink-0">
-                        {t("flat.unverified")}
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="shrink-0 text-muted-foreground"
-                      >
-                        {t("flat.unclaimed")}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {flat.postalCode} {flat.city}
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="text-2xl font-bold">
-                        {flat.avgRatingDisplay}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {" "}
-                        / 5
-                      </span>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {flat.reviewCount} {t("flat.reviews")}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
+          <div className="container relative">
+            <div className="mx-auto max-w-2xl text-center">
+              {/* social proof pill */}
+              {totalReviewCount > 0 && (
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[var(--brand)]/30 bg-[var(--brand-light)] px-4 py-1.5 text-sm font-medium text-[var(--brand-dark)]">
+                  <Users className="h-3.5 w-3.5" />
+                  <span>
+                    {totalReviewCount.toLocaleString("de-DE")}{" "}
+                    {t("home.socialProof")}
+                  </span>
+                </div>
+              )}
 
-      {/* Pagination controls */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-8">
-          <Link
-            href={buildUrl({ page: String(page - 1) })}
-            aria-disabled={page <= 1}
-            tabIndex={page <= 1 ? -1 : undefined}
-          >
-            <Button variant="outline" size="sm" disabled={page <= 1}>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              {t("pagination.previous")}
-            </Button>
-          </Link>
-          <span className="text-sm text-muted-foreground">
-            {t("pagination.page")} {page} {t("pagination.of")} {totalPages}
-          </span>
-          <Link
-            href={buildUrl({ page: String(page + 1) })}
-            aria-disabled={page >= totalPages}
-            tabIndex={page >= totalPages ? -1 : undefined}
-          >
-            <Button variant="outline" size="sm" disabled={page >= totalPages}>
-              {t("pagination.next")}
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
-        </div>
-      )}
+              <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl">
+                {t("home.heroTitle")}
+              </h1>
+              <p className="mb-8 text-lg text-muted-foreground md:text-xl">
+                {t("home.heroSubtitle")}
+              </p>
 
-      {/* Guest CTA — only shown to unauthenticated visitors */}
-      {isGuest && (
-        <div className="mt-12 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/30 px-6 py-8 text-center">
-          <h2 className="text-xl font-semibold mb-2">{t("home.guestCta")}</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            {t("home.guestCtaDesc")}
-          </p>
-          <Link href="/flat/new/guest">
-            <Button>{t("home.guestCtaButton")}</Button>
-          </Link>
-        </div>
-      )}
-
-      {/* FAQ teaser */}
-      <div className="mt-16 border-t pt-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">{t("faq.title")}</h2>
-          <Link
-            href="/faq"
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("faq.viewAll")}
-            <ChevronRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="divide-y rounded-lg border">
-          {[
-            { q: t("faq.search.q"), a: t("faq.search.a") },
-            { q: t("faq.review.q"), a: t("faq.review.a") },
-            { q: t("faq.addFlat.q"), a: t("faq.addFlat.a") },
-          ].map(({ q, a }) => (
-            <div key={q} className="px-5 py-4">
-              <p className="font-medium mb-1">{q}</p>
-              <p className="text-sm text-muted-foreground">{a}</p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a href="#listings">
+                  <Button size="lg" className="gap-2 font-semibold shadow-sm">
+                    <Search className="h-4 w-4" />
+                    {t("home.heroSearchCta")}
+                  </Button>
+                </a>
+                <Link href="/flat/new/guest">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 font-semibold"
+                  >
+                    <PenLine className="h-4 w-4" />
+                    {t("home.heroReviewCta")}
+                  </Button>
+                </Link>
+              </div>
             </div>
-          ))}
-        </div>
-        <div className="mt-4 text-center">
-          <Link href="/faq">
-            <Button variant="outline" size="sm">
-              {t("faq.viewAll")}
-              <ChevronRight className="h-4 w-4 ml-1" />
+          </div>
+        </section>
+      )}
+
+      {/* ── Listings ── */}
+      <div id="listings" className="container py-8">
+        {/* search bar */}
+        <div className="mb-8">
+          {isFiltered && (
+            <h1 className="mb-4 text-2xl font-bold">{t("nav.flats")}</h1>
+          )}
+          <form className="flex flex-wrap gap-2">
+            <div className="relative flex-1 min-w-48">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                name="q"
+                placeholder={t("filter.searchPlaceholder")}
+                defaultValue={query}
+                className="pl-9"
+              />
+            </div>
+            {/* City filter */}
+            <select
+              name="city"
+              defaultValue={cityFilter}
+              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="">{t("filter.allCities")}</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+            {/* Min-rating filter */}
+            <select
+              name="minRating"
+              defaultValue={minRating > 0 ? String(minRating) : ""}
+              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <option value="">
+                {t("filter.minRating")}: {t("filter.any")}
+              </option>
+              {[1, 2, 3, 4].map((n) => (
+                <option key={n} value={n}>
+                  ≥ {n} ★
+                </option>
+              ))}
+            </select>
+            <Button type="submit" className="gap-2">
+              <Search className="h-4 w-4" />
+              {t("common.search")}
             </Button>
-          </Link>
+          </form>
+        </div>
+
+        {flatsForDisplay.length === 0 ? (
+          <div className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <MapPin className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-lg font-semibold">{t("common.noResults")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t("common.noResultsHint")}
+            </p>
+            <div className="mt-6">
+              <Link href="/flat/new/guest">
+                <Button variant="outline" className="gap-2">
+                  <PenLine className="h-4 w-4" />
+                  {t("home.ctaButtonGuest")}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {flatsForDisplay.map((flat) => (
+              <Link key={flat.id} href={`/flat/${flat.slug}`}>
+                <Card className="group h-full cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base leading-snug group-hover:text-primary transition-colors">
+                        {flat.address}
+                      </CardTitle>
+                      {flat.verified ? (
+                        <Badge variant="default" className="shrink-0 text-xs">
+                          {t("flat.verified")}
+                        </Badge>
+                      ) : flat.landlordId ? (
+                        <Badge variant="secondary" className="shrink-0 text-xs">
+                          {t("flat.unverified")}
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 text-xs text-muted-foreground"
+                        >
+                          {t("flat.unclaimed")}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {flat.postalCode} {flat.city}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    {flat.reviewCount > 0 ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <StarRating value={flat.avgRating} size="sm" />
+                          <span className="text-sm font-semibold tabular-nums">
+                            {flat.avgRatingDisplay}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {flat.reviewCount}{" "}
+                          {flat.reviewCount === 1
+                            ? t("flat.review")
+                            : t("flat.reviews")}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground italic">
+                        {t("flat.noRatingsYet")}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-10">
+            <Link
+              href={buildUrl({ page: String(page - 1) })}
+              aria-disabled={page <= 1}
+              tabIndex={page <= 1 ? -1 : undefined}
+            >
+              <Button variant="outline" size="sm" disabled={page <= 1}>
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                {t("pagination.previous")}
+              </Button>
+            </Link>
+            <span className="text-sm text-muted-foreground">
+              {t("pagination.page")} {page} {t("pagination.of")} {totalPages}
+            </span>
+            <Link
+              href={buildUrl({ page: String(page + 1) })}
+              aria-disabled={page >= totalPages}
+              tabIndex={page >= totalPages ? -1 : undefined}
+            >
+              <Button variant="outline" size="sm" disabled={page >= totalPages}>
+                {t("pagination.next")}
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        {/* ── Review CTA — visible to all ── */}
+        <div className="mt-16 overflow-hidden rounded-2xl border border-[var(--brand)]/20 bg-gradient-to-br from-[var(--brand-light)] to-background p-8 md:p-10">
+          <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+              <PenLine className="h-8 w-8" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold md:text-2xl">
+                {t("home.ctaTitle")}
+              </h2>
+              <p className="mt-1 text-muted-foreground">{t("home.ctaDesc")}</p>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row md:flex-col lg:flex-row">
+              {isGuest ? (
+                <Link href="/flat/new/guest">
+                  <Button size="lg" className="w-full gap-2 font-semibold">
+                    <PenLine className="h-4 w-4" />
+                    {t("home.ctaButtonGuest")}
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/flat/new">
+                  <Button size="lg" className="w-full gap-2 font-semibold">
+                    <PenLine className="h-4 w-4" />
+                    {t("home.ctaLoggedIn")}
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── FAQ teaser ── */}
+        <div className="mt-16 border-t pt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">{t("faq.title")}</h2>
+            <Link
+              href="/faq"
+              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("faq.viewAll")}
+              <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="divide-y rounded-xl border">
+            {[
+              { q: t("faq.search.q"), a: t("faq.search.a") },
+              { q: t("faq.review.q"), a: t("faq.review.a") },
+              { q: t("faq.addFlat.q"), a: t("faq.addFlat.a") },
+            ].map(({ q, a }) => (
+              <div key={q} className="px-5 py-4">
+                <p className="font-semibold mb-1">{q}</p>
+                <p className="text-sm text-muted-foreground">{a}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 text-center">
+            <Link href="/faq">
+              <Button variant="outline" size="sm" className="gap-1">
+                {t("faq.viewAll")}
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
