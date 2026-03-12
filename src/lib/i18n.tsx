@@ -140,6 +140,7 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
     "footer.allRightsReserved": "All rights reserved.",
+    "footer.version": "Version",
     // faq
     "faq.title": "FAQ",
     "faq.subtitle": "Answers to common questions about Rate Your Flat",
@@ -331,6 +332,7 @@ export const translations: Record<string, Record<string, string>> = {
     "footer.privacy": "Datenschutz",
     "footer.terms": "Nutzungsbedingungen",
     "footer.allRightsReserved": "Alle Rechte vorbehalten.",
+    "footer.version": "Version",
     // faq
     "faq.title": "Häufige Fragen",
     "faq.subtitle": "Antworten auf häufige Fragen zu Bewerte deine Wohnung",
